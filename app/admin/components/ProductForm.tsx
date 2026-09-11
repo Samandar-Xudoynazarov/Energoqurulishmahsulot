@@ -12,6 +12,12 @@ const LANG_TABS: { value: Language; label: string }[] = [
   { value: 'en', label: 'English' },
 ];
 
+// Rus tilidagi matnlarda Lotin harflari (a-z, A-Z) ishlatilishini taqiqlaymiz.
+// Mahsulot kodlari (Ф5-УСУ kabi) bu tekshiruvga kirmaydi — faqat nomi/teg/tavsif/tex.jadval uchun.
+function hasLatinLetters(text: string): boolean {
+  return /[a-zA-Z]/.test(text);
+}
+
 function emptyProduct(): Product {
   return {
     code: '',
@@ -85,6 +91,18 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
       return;
     }
 
+    // Rus tili maydonlarida faqat Kirill alifbosi bo'lishi shart — Lotin harflari taqiqlanadi.
+    const ruFieldsInvalid =
+      hasLatinLetters(product.name.ru) ||
+      hasLatinLetters(product.tag.ru) ||
+      hasLatinLetters(product.description.ru) ||
+      product.specs.some((s) => hasLatinLetters(s.label.ru));
+    if (ruFieldsInvalid) {
+      setError('Rus tilidagi maydonlarda Lotin harflari ishlatilmasin — faqat Kirill alifbosida yozing (masalan: "Фундамент", "Опора", "Лоток").');
+      setActiveLang('ru');
+      return;
+    }
+
     setSaving(true);
     try {
       const url = isEdit ? `/api/admin/products/${encodeURIComponent(product.code)}` : '/api/admin/products';
@@ -113,13 +131,13 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
       <h1 style={{ marginTop: 0 }}>{isEdit ? `Tahrirlash: ${product.code}` : 'Yangi mahsulot'}</h1>
 
       <div style={row}>
-        <label style={label}>Mahsulot kodi (masalan F5-USU)</label>
+        <label style={label}>Mahsulot kodi (masalan Ф5-УСУ)</label>
         <input
           value={product.code}
           onChange={(e) => setProduct((p) => ({ ...p, code: e.target.value }))}
           disabled={isEdit}
           style={input}
-          placeholder="F5-USU"
+          placeholder="Ф5-УСУ"
         />
       </div>
 
@@ -159,21 +177,46 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
         ))}
       </div>
 
+      {activeLang === 'ru' && (
+        <p style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: 8, padding: '0.6rem 0.9rem', fontSize: '0.85rem', color: '#7a5c00', marginTop: 0 }}>
+          ⚠️ Faqat Kirill alifbosida yozing (masalan: "Фундамент Ф5-УСУ"). Lotin harflarida ("Fundament") yozilsa, forma saqlashga yo'l qo'ymaydi.
+        </p>
+      )}
       <div style={row}>
         <label style={label}>Nomi ({activeLang})</label>
-        <input value={product.name[activeLang]} onChange={(e) => updateField(activeLang, 'name', e.target.value)} style={input} />
+        <input
+          value={product.name[activeLang]}
+          onChange={(e) => updateField(activeLang, 'name', e.target.value)}
+          style={{ ...input, ...(activeLang === 'ru' && hasLatinLetters(product.name.ru) ? invalidInput : {}) }}
+        />
+        {activeLang === 'ru' && hasLatinLetters(product.name.ru) && (
+          <span style={fieldWarning}>Lotin harflari topildi — Kirillchaga o'zgartiring</span>
+        )}
       </div>
       <div style={row}>
         <label style={label}>Teg/qisqa yorliq ({activeLang})</label>
-        <input value={product.tag[activeLang]} onChange={(e) => updateField(activeLang, 'tag', e.target.value)} style={input} />
+        <input
+          value={product.tag[activeLang]}
+          onChange={(e) => updateField(activeLang, 'tag', e.target.value)}
+          style={{ ...input, ...(activeLang === 'ru' && hasLatinLetters(product.tag.ru) ? invalidInput : {}) }}
+        />
+        {activeLang === 'ru' && hasLatinLetters(product.tag.ru) && (
+          <span style={fieldWarning}>Lotin harflari topildi — Kirillchaga o'zgartiring</span>
+        )}
       </div>
       <div style={row}>
         <label style={label}>Tavsif ({activeLang})</label>
         <textarea
           value={product.description[activeLang]}
           onChange={(e) => updateField(activeLang, 'description', e.target.value)}
-          style={{ ...input, minHeight: 100, resize: 'vertical' as const }}
+          style={{
+            ...input, minHeight: 100, resize: 'vertical' as const,
+            ...(activeLang === 'ru' && hasLatinLetters(product.description.ru) ? invalidInput : {}),
+          }}
         />
+        {activeLang === 'ru' && hasLatinLetters(product.description.ru) && (
+          <span style={fieldWarning}>Lotin harflari topildi — Kirillchaga o'zgartiring</span>
+        )}
       </div>
 
       {/* Technical specs table */}
@@ -189,7 +232,7 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
               placeholder={`Nomi (${activeLang})`}
               value={spec.label[activeLang]}
               onChange={(e) => updateSpecLabel(spec.id, activeLang, e.target.value)}
-              style={inputSmall}
+              style={{ ...inputSmall, ...(activeLang === 'ru' && hasLatinLetters(spec.label.ru) ? invalidInput : {}) }}
             />
             <input
               placeholder="Qiymati (masalan: B25)"
@@ -248,6 +291,8 @@ const input: React.CSSProperties = {
   fontSize: '0.95rem', boxSizing: 'border-box',
 };
 const inputSmall: React.CSSProperties = { ...input, padding: '0.5rem 0.6rem', fontSize: '0.85rem' };
+const invalidInput: React.CSSProperties = { border: '1px solid #c0392b', background: '#fff5f5' };
+const fieldWarning: React.CSSProperties = { display: 'block', color: '#c0392b', fontSize: '0.8rem', marginTop: '0.3rem' };
 const btnPrimary: React.CSSProperties = {
   background: '#1a3f62', color: '#fff', padding: '0.7rem 1.5rem', borderRadius: 8,
   border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem',

@@ -19,10 +19,12 @@ export default function Contact({ t }: ContactProps) {
       <div className="contact-grid">
         <div className="contact-info">
           <h4>ENERGOQURILISHMAHSULOT MCHJ</h4>
-          <p><i className="fas fa-map-pin"></i> {t('address')}</p>
+          <p><i className="fas fa-map-pin"></i> 
+            <a href="https://maps.app.goo.gl/KL94CdAhBf2qAEt29">"Energoqurilishmahsulot" MCHJ</a>
+          </p>
           <p><i className="fas fa-phone-alt"></i> +998 (XX) XXX-XX-XX</p>
-          <p><i className="fas fa-envelope"></i> info@energoqurilish.uz</p>
-          <p><i className="fas fa-globe"></i> www.energoqurilish.uz</p>
+          <p><i className="fas fa-envelope"></i>samandarxodoynazarov2208@gmail.com</p>
+          <p><i className="fas fa-globe"></i> www.energoqurilishmahsulot.uz</p>
           <div style={{ marginTop: 20, background: 'rgba(255,255,255,0.1)', padding: 15, borderRadius: 12, textAlign: 'center' }}>
             <i className="fas fa-arrow-right" style={{ color: 'var(--accent)' }}></i> {t('footer_motto')}
           </div>

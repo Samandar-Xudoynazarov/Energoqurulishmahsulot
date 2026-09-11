@@ -9,9 +9,9 @@ const PRODUCTS_KEY = 'data/products.json';
 function seedProducts(): Product[] {
   const categoryFor = (code: string): Product['category'] => {
     if (['jamoa', 'texnika', 'avtopark'].includes(code)) return 'jamoa';
-    if (code.startsWith('F')) return 'fundament';
-    if (code.startsWith('PA') || code.startsWith('USO')) return 'tayanch';
-    if (code.startsWith('L') || code.startsWith('SB')) return 'lotok';
+    if (code.startsWith('Ф')) return 'fundament';
+    if (code.startsWith('ПА') || code.startsWith('УСО')) return 'tayanch';
+    if (code.startsWith('Л') || code.startsWith('СБ')) return 'lotok';
     return 'maxsus';
   };
 
