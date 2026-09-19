@@ -24,7 +24,7 @@ export const seoContent: Record<Language, SeoEntry> = {
     keywords: [
       'ENERGOQURILISHMAHSULOT', 'temir-beton mahsulotlari', 'temir-beton zavodi',
       'fundament ishlab chiqarish', 'tayanch ustunlar', 'stalbalar', 'lotok',
-      'beton plitalar', "O'zbekiston energetika", 'ISO 9001', ...PRODUCT_CODES,
+      'beton plitalar', "O'zbekiston energetika", 'ISO 9001', ...PRODUCT_CODES, 'Energo qurulish maxsuloti', 'energo', 'temir biton' 
     ],
     ogLocale: 'uz_UZ',
   },
@@ -46,7 +46,7 @@ export const seoContent: Record<Language, SeoEntry> = {
     keywords: [
       'ENERGOQURILISHMAHSULOT', 'reinforced concrete products', 'concrete factory Uzbekistan',
       'foundation manufacturer', 'support poles', 'concrete trays', 'concrete slabs',
-      'Uzbekistan energy sector', 'ISO 9001', ...PRODUCT_CODES,
+      'Uzbekistan energy sector', 'ISO 9001', ...PRODUCT_CODES,'Energo qurulish maxsuloti', 'energo', 'temir biton'
     ],
     ogLocale: 'en_US',
   },
