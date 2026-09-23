@@ -10,6 +10,7 @@ import InquiryForm from './InquiryForm';
 import FloatingContact from './FloatingContact';
 import { ProjectCard, ProjectModal } from './Projects';
 import { telHref } from './Contact';
+import ProtectedImage from './ProtectedImage';
 
 interface Props {
   locale: Language;
@@ -55,7 +56,7 @@ export default function ProductPageView({ locale, product, category, related, pr
 
           <div className="pp-hero">
             <div className="pp-image">
-              {image ? <img src={image} alt={`${product.code} — ${name}`} /> : (
+              {image ? <ProtectedImage src={image} alt={`${product.code} — ${name}`} /> : (
                 <div className="pp-image-empty"><i className="fas fa-cubes"></i><span>{product.code}</span></div>
               )}
             </div>
@@ -64,10 +65,12 @@ export default function ProductPageView({ locale, product, category, related, pr
               <h1><span className="pp-code">{product.code}</span> {name !== product.code && <span className="pp-name">{name}</span>}</h1>
               <p className="pp-desc">{desc || t('product_no_desc')}</p>
 
-              <dl className="pp-facts">
-                <div><dt>{t('product_code')}</dt><dd>{product.code}</dd></div>
-                {catName && <div><dt>{t('product_category')}</dt><dd>{catName}</dd></div>}
-              </dl>
+              {product.specs.length === 0 && (
+                <dl className="pp-facts">
+                  <div><dt>{t('product_code')}</dt><dd>{product.code}</dd></div>
+                  {catName && <div><dt>{t('product_category')}</dt><dd>{catName}</dd></div>}
+                </dl>
+              )}
 
               <div className="pp-cta">
                 <a href="#inquiry" className="btn-accent"><i className="fas fa-file-invoice-dollar"></i> {t('product_request_price')}</a>
@@ -75,24 +78,24 @@ export default function ProductPageView({ locale, product, category, related, pr
                   <a href={telHref(settings.phone)} className="btn-outline"><i className="fas fa-phone-alt"></i> {settings.phone}</a>
                 )}
               </div>
+
+              {product.specs.length > 0 && (
+                <div className="pp-specs-wrap">
+                  <h2 className="pp-specs-title">{t('product_specs')}</h2>
+                  <table className="pp-specs">
+                    <tbody>
+                      {product.specs.map((s) => (
+                        <tr key={s.id}>
+                          <th scope="row">{s.label[lang] || s.label.uz}</th>
+                          <td>{s.value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
-
-          {product.specs.length > 0 && (
-            <section className="pp-section">
-              <h2>{t('product_specs')}</h2>
-              <table className="pp-specs">
-                <tbody>
-                  {product.specs.map((s) => (
-                    <tr key={s.id}>
-                      <th scope="row">{s.label[lang] || s.label.uz}</th>
-                      <td>{s.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
-          )}
 
           {(product.certificatePdf || product.passportPdf) && (
             <section className="pp-section">

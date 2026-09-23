@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Language, Project, Product } from '../types';
 import { productUrl, realImage } from '../lib/product-utils';
+import ProtectedImage from './ProtectedImage';
 
 interface ProjectsProps {
   t: (key: string) => string;
@@ -18,7 +19,7 @@ export function ProjectCard({ project, lang, onOpen }: { project: Project; lang:
   return (
     <button type="button" className="project-card" onClick={onOpen}>
       <div className="project-card-img">
-        {cover ? <img src={cover} alt={title} loading="lazy" /> : <i className="fas fa-industry"></i>}
+        {cover ? <ProtectedImage src={cover} alt={title} loading="lazy" /> : <i className="fas fa-industry"></i>}
         {project.images.length > 1 && (
           <span className="project-card-count"><i className="fas fa-images"></i> {project.images.length}</span>
         )}
@@ -75,7 +76,7 @@ export function ProjectModal({
         {images.length > 0 && (
           <div className="project-gallery">
             <div className="project-gallery-main">
-              <img src={images[active]} alt={`${title} — ${active + 1}`} />
+              <ProtectedImage src={images[active]} alt={`${title} — ${active + 1}`} />
               {images.length > 1 && (
                 <>
                   <button type="button" className="pg-nav pg-prev" aria-label="Prev" onClick={() => setActive((i) => (i - 1 + images.length) % images.length)}>
@@ -91,7 +92,7 @@ export function ProjectModal({
               <div className="project-gallery-thumbs">
                 {images.map((src, i) => (
                   <button type="button" key={src} className={i === active ? 'active' : ''} onClick={() => setActive(i)}>
-                    <img src={src} alt="" loading="lazy" />
+                    <img src={src} alt="" loading="lazy" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                   </button>
                 ))}
               </div>

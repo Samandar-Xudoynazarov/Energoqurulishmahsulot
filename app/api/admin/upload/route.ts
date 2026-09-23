@@ -25,10 +25,9 @@ export async function POST(req: NextRequest) {
     }
 
     const ext = kind === 'pdf' ? 'pdf' : (String(contentType).split('/')[1] || 'jpg');
-    const base = String(filename || 'file')
-      .replace(/\.[^.]+$/, '')
-      .replace(/[^a-zA-Z0-9_-]/g, '_')
-      .slice(0, 60) || 'file';
+    const rawBase = String(filename || 'file').replace(/\.[^.]+$/, '');
+    const watermarked = /-wm$/.test(rawBase);
+    const base = (rawBase.replace(/-wm$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 50) || 'file') + (watermarked ? '-wm' : '');
     const path = `uploads/${kind === 'pdf' ? 'pdf' : 'image'}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${base}.${ext}`;
 
     const { signedUrl, publicUrl } = await createUploadUrl(path);

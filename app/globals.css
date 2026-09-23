@@ -1002,7 +1002,8 @@ a.product-item { display: block; color: inherit; }
 .breadcrumbs a { color: var(--primary-light); }
 .breadcrumbs a:hover { color: var(--accent); }
 .breadcrumbs i { font-size: 0.65rem; opacity: 0.6; }
-.pp-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.pp-hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: start; }
+.pp-image { position: sticky; top: 90px; }
 .pp-image {
   border-radius: 20px; overflow: hidden; background: var(--light-bg);
   aspect-ratio: 4 / 3; box-shadow: var(--shadow);
@@ -1016,10 +1017,10 @@ a.product-item { display: block; color: inherit; }
 .pp-image-empty i { font-size: 4rem; color: var(--accent); }
 .pp-image-empty span { font-size: 1.8rem; font-weight: 800; color: #fff; }
 .pp-info .modal-tag { display: inline-block; margin-bottom: 12px; }
-.pp-info h1 { color: var(--primary); font-size: 2.2rem; line-height: 1.2; margin-bottom: 16px; }
+.pp-info h1 { color: var(--primary); font-size: 2rem; line-height: 1.2; margin-bottom: 16px; }
 .pp-code { color: var(--accent); }
 .pp-name { display: block; font-size: 1.4rem; font-weight: 600; color: var(--dark-text); margin-top: 6px; }
-.pp-desc { color: var(--gray-text); margin-bottom: 20px; white-space: pre-line; }
+.pp-desc { color: var(--gray-text); margin-bottom: 18px; white-space: pre-line; font-size: 0.95rem; }
 .pp-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
 .pp-facts div { background: var(--light-bg); border-radius: 12px; padding: 12px 16px; }
 .pp-facts dt { font-size: 0.8rem; color: var(--gray-text); }
@@ -1027,11 +1028,17 @@ a.product-item { display: block; color: inherit; }
 .pp-cta { display: flex; flex-wrap: wrap; gap: 12px; }
 .pp-section { margin-top: 56px; scroll-margin-top: 90px; }
 .pp-section > h2, .pp-inquiry h2 { color: var(--primary); font-size: 1.6rem; margin-bottom: 18px; }
-.pp-specs { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
-.pp-specs th, .pp-specs td { padding: 12px 18px; text-align: left; border-bottom: 1px solid #eef1f4; }
-.pp-specs th { color: var(--gray-text); font-weight: 600; width: 50%; }
-.pp-specs td { font-weight: 700; color: var(--primary); }
-.pp-specs tr:nth-child(even) { background: #fafbfd; }
+.pp-specs-wrap { margin-top: 24px; }
+.pp-specs-title { font-size: 1.05rem; color: var(--primary); margin-bottom: 10px; }
+.pp-specs {
+  width: 100%; border-collapse: collapse; font-size: 0.9rem; line-height: 1.35;
+  border: 1px solid #e3e8ee; border-radius: 10px; overflow: hidden; background: var(--white);
+}
+.pp-specs th, .pp-specs td { padding: 7px 12px; text-align: left; border-bottom: 1px solid #eef1f4; vertical-align: top; }
+.pp-specs tr:last-child th, .pp-specs tr:last-child td { border-bottom: none; }
+.pp-specs th { color: var(--gray-text); font-weight: 500; width: 55%; }
+.pp-specs td { font-weight: 700; color: var(--dark-text); }
+.pp-specs tr:nth-child(even) { background: #f7f9fb; }
 .pp-docs { display: flex; flex-wrap: wrap; gap: 14px; }
 .pp-doc {
   display: inline-flex; align-items: center; gap: 10px;
@@ -1049,15 +1056,27 @@ a.product-item { display: block; color: inherit; }
 
 @media (max-width: 992px) {
   .pp-hero, .pp-inquiry { grid-template-columns: 1fr; }
+  .pp-image { position: static; }
 }
 @media (max-width: 768px) {
   .product-page { padding-top: 90px; }
   .pp-info h1 { font-size: 1.7rem; }
   .pp-name { font-size: 1.15rem; }
   .product-page .pp-inquiry { padding: 24px 16px; gap: 20px; }
-  .pp-specs th, .pp-specs td { padding: 10px 12px; font-size: 0.92rem; }
+  .pp-specs th, .pp-specs td { padding: 6px 10px; }
   .pp-cta a { flex: 1 1 100%; justify-content: center; }
   .project-grid { grid-template-columns: 1fr; }
   .floating-contact { right: 14px; bottom: 14px; }
   .fc-btn { width: 50px; height: 50px; font-size: 1.25rem; }
 }
+
+/* ---------- PROTECTED IMAGES ---------- */
+.protected-img { position: relative; width: 100%; height: 100%; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.protected-img img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.protected-img-shield { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.protected-img-logo {
+  width: 38%; max-width: 260px; aspect-ratio: 1;
+  background: url('/watermark.webp') center / contain no-repeat;
+  opacity: 0.28;
+}
+.modal-image-wrap .protected-img img, .project-gallery-main .protected-img img { object-fit: contain; }

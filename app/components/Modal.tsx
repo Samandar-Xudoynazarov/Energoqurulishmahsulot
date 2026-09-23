@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { Language, Product } from '../types';
 import { productUrl, realImage, isRealProduct } from '../lib/product-utils';
+import ProtectedImage from './ProtectedImage';
 
 interface ModalProps {
   modalKey: string | null;
@@ -66,7 +67,7 @@ export default function Modal({ modalKey, currentLang, onClose, products }: Moda
 
         {image && (
           <div className="modal-image-wrap">
-            <img src={image} alt={title} />
+            <ProtectedImage src={image} alt={title} />
           </div>
         )}
 
@@ -86,75 +87,6 @@ export default function Modal({ modalKey, currentLang, onClose, products }: Moda
             </div>
           )}
 
-          {product.specs.length > 0 && (
-            <div style={{ marginTop: '1.5rem' }}>
-              <h4 style={{ marginBottom: '0.75rem' }}>{labels.specs}</h4>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                  {product.specs.map((spec) => (
-                    <tr key={spec.id} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={{ padding: '0.5rem 0', color: '#556', fontWeight: 600 }}>
-                        {spec.label[currentLang] || spec.label.uz}
-                      </td>
-                      <td style={{ padding: '0.5rem 0', textAlign: 'right' }}>{spec.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {(product.certificatePdf || product.passportPdf) && (
-            <div className="modal-docs">
-              {product.certificatePdf && (
-                <div className="modal-doc-card">
-                  <div className="modal-doc-header">
-                    <div className="modal-doc-title">
-                      <i className="fas fa-file-pdf"></i>
-                      {labels.certificate}
-                    </div>
-                    <a
-                      className="modal-doc-open"
-                      href={product.certificatePdf}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <i className="fas fa-arrow-up-right-from-square"></i>
-                      {labels.openNewTab}
-                    </a>
-                  </div>
-                  <iframe
-                    src={product.certificatePdf}
-                    title={`${title} - ${labels.certificate}`}
-                  />
-                </div>
-              )}
-
-              {product.passportPdf && (
-                <div className="modal-doc-card">
-                  <div className="modal-doc-header">
-                    <div className="modal-doc-title">
-                      <i className="fas fa-file-pdf"></i>
-                      {labels.passport}
-                    </div>
-                    <a
-                      className="modal-doc-open"
-                      href={product.passportPdf}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <i className="fas fa-arrow-up-right-from-square"></i>
-                      {labels.openNewTab}
-                    </a>
-                  </div>
-                  <iframe
-                    src={product.passportPdf}
-                    title={`${title} - ${labels.passport}`}
-                  />
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { realImage } from '../lib/product-utils';
+import ProtectedImage from './ProtectedImage';
 
 interface AboutProps {
   t: (key: string) => string;
@@ -34,7 +35,7 @@ export default function About({ t, image }: AboutProps) {
         </div>
         {img ? (
           <div className="about-image about-image--photo">
-            <img src={img} alt={t('about_image')} loading="lazy" />
+            <ProtectedImage src={img} alt={t('about_image')} loading="lazy" />
           </div>
         ) : (
           <div className="about-image">{t('about_image')}</div>
