@@ -74,7 +74,7 @@ export default function Modal({ modalKey, currentLang, onClose, products }: Moda
         <div className="modal-body" style={!image ? { paddingTop: 34 } : undefined}>
           {tag && <div className="modal-tag">{tag}</div>}
           <h3>{title}</h3>
-          {desc && <p>{desc}</p>}
+          {desc && <p className="modal-desc-clamp">{desc}</p>}
 
           {pageUrl && (
             <div className="modal-actions">

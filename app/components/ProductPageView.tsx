@@ -63,8 +63,6 @@ export default function ProductPageView({ locale, product, category, related, pr
             <div className="pp-info">
               {tag && <div className="modal-tag">{tag}</div>}
               <h1><span className="pp-code">{product.code}</span> {name !== product.code && <span className="pp-name">{name}</span>}</h1>
-              <p className="pp-desc">{desc || t('product_no_desc')}</p>
-
               {product.specs.length === 0 && (
                 <dl className="pp-facts">
                   <div><dt>{t('product_code')}</dt><dd>{product.code}</dd></div>
@@ -96,6 +94,13 @@ export default function ProductPageView({ locale, product, category, related, pr
               )}
             </div>
           </div>
+
+          {desc && (
+            <section className="pp-section pp-description">
+              <h2>{t('product_description')}</h2>
+              <div className="pp-desc">{desc}</div>
+            </section>
+          )}
 
           {(product.certificatePdf || product.passportPdf) && (
             <section className="pp-section">

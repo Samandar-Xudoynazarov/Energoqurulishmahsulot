@@ -210,7 +210,7 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
           value={product.description[activeLang]}
           onChange={(e) => updateField(activeLang, 'description', e.target.value)}
           style={{
-            ...input, minHeight: 100, resize: 'vertical' as const,
+            ...input, minHeight: 260, resize: 'vertical' as const, lineHeight: 1.6,
             ...(activeLang === 'ru' && hasLatinLetters(product.description.ru) ? invalidInput : {}),
           }}
         />
