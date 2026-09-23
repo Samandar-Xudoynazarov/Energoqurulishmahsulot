@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { compressImage } from '../../lib/compress-image';
+import { uploadFile } from '../lib/upload';
 
 interface Props {
   label: string;
@@ -13,20 +13,6 @@ export default function MultiImageUploader({ label, value, onChange }: Props) {
   const [uploading, setUploading] = useState(0);
   const [error, setError] = useState('');
 
-  async function uploadOne(file: File): Promise<string | null> {
-    const toUpload = await compressImage(file);
-    const formData = new FormData();
-    formData.append('file', toUpload);
-    formData.append('kind', 'image');
-    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setError(data.error || 'Yuklashda xatolik');
-      return null;
-    }
-    return data.url as string;
-  }
-
   async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
     e.target.value = '';
@@ -37,10 +23,9 @@ export default function MultiImageUploader({ label, value, onChange }: Props) {
     // Ketma-ket yuklaymiz — tartib saqlanadi va server ortiqcha yuklanmaydi
     for (const f of files) {
       try {
-        const url = await uploadOne(f);
-        if (url) urls.push(url);
-      } catch {
-        setError('Yuklashda xatolik yuz berdi');
+        urls.push(await uploadFile(f, 'image'));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Yuklashda xatolik yuz berdi');
       }
       setUploading((n) => n - 1);
     }

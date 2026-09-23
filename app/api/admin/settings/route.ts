@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSettings, saveSettings } from '../../../lib/settings-store';
+import { getSettingsFresh as getSettings, saveSettings } from '../../../lib/settings-store';
 import { deleteBlobFile } from '../../../lib/products-store';
 
 export const dynamic = 'force-dynamic';

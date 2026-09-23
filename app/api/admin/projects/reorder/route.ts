@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProjects, saveProjects } from '../../../../lib/projects-store';
+import { getProjectsFresh as getProjects, saveProjects } from '../../../../lib/projects-store';
 
 export const dynamic = 'force-dynamic';
 

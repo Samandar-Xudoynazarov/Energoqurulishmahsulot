@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getProducts, saveProducts } from '../../../lib/products-store';
+import { getProductsFresh as getProducts, saveProducts } from '../../../lib/products-store';
 import { fullModalData } from '../../../data/modalData';
 import { Product } from '../../../types';
+
+export const dynamic = 'force-dynamic';
 
 // Bir martalik migratsiya: blob'dagi (eski) mahsulotlar ro'yxatini
 // app/data/modalData.ts dagi joriy kodlar bilan TARTIB bo'yicha moslashtiradi.

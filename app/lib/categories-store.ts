@@ -1,7 +1,6 @@
-import { put, list } from '@vercel/blob';
+import { createJsonStore } from './json-store';
 import { Category } from '../types';
 
-const CATEGORIES_KEY = 'data/categories.json';
 
 const DEFAULT_CATEGORIES: Category[] = [
   { id: 'fundament', name: { uz: 'Fundamentlar', ru: 'Фундаменты', en: 'Foundations' }, order: 0 },
@@ -12,46 +11,14 @@ const DEFAULT_CATEGORIES: Category[] = [
   { id: 'jamoa', name: { uz: 'Jamoa/Texnika', ru: 'Коллектив/Техника', en: 'Team/Equipment' }, order: 5 },
 ];
 
-let cache: { data: Category[]; fetchedAt: number } | null = null;
-const CACHE_TTL_MS = 5000;
+const store = createJsonStore<Category[]>('categories', () => DEFAULT_CATEGORIES.map((c) => ({ ...c, name: { ...c.name } })));
 
-export async function getCategories(): Promise<Category[]> {
-  if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
-    return cache.data;
-  }
-
-  try {
-    const { blobs } = await list({ prefix: CATEGORIES_KEY, limit: 1 });
-    const match = blobs.find((b) => b.pathname === CATEGORIES_KEY);
-
-    if (!match) {
-      await saveCategories(DEFAULT_CATEGORIES);
-      return DEFAULT_CATEGORIES;
-    }
-
-    const res = await fetch(match.url, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to fetch categories.json from blob');
-    const data = (await res.json()) as Category[];
-    cache = { data, fetchedAt: Date.now() };
-    return data;
-  } catch (err) {
-    console.error('getCategories error, falling back to defaults:', err);
-    return DEFAULT_CATEGORIES;
-  }
-}
-
-export async function saveCategories(categories: Category[]): Promise<void> {
-  await put(CATEGORIES_KEY, JSON.stringify(categories, null, 2), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
-  cache = { data: categories, fetchedAt: Date.now() };
-}
+export const getCategories = store.get;
+export const getCategoriesFresh = store.getFresh;
+export const saveCategories = store.save;
 
 export async function addCategory(name: Category['name']): Promise<Category[]> {
-  const categories = await getCategories();
+  const categories = await getCategoriesFresh();
   const id = slugify(name.uz || name.ru || name.en || `category-${Date.now()}`);
   let uniqueId = id;
   let suffix = 1;
@@ -65,14 +32,14 @@ export async function addCategory(name: Category['name']): Promise<Category[]> {
 }
 
 export async function renameCategory(id: string, name: Category['name']): Promise<Category[]> {
-  const categories = await getCategories();
+  const categories = await getCategoriesFresh();
   const updated = categories.map((c) => (c.id === id ? { ...c, name } : c));
   await saveCategories(updated);
   return updated;
 }
 
 export async function deleteCategory(id: string): Promise<Category[]> {
-  const categories = await getCategories();
+  const categories = await getCategoriesFresh();
   const updated = categories.filter((c) => c.id !== id);
   await saveCategories(updated);
   return updated;

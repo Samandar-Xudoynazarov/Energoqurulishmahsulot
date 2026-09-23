@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { renameCategory, deleteCategory } from '../../../../lib/categories-store';
-import { getProducts } from '../../../../lib/products-store';
+import { getProductsFresh as getProducts } from '../../../../lib/products-store';
+
+export const dynamic = 'force-dynamic';
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {

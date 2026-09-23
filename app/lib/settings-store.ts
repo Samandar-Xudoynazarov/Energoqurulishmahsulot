@@ -4,10 +4,15 @@ import { DEFAULT_SETTINGS } from './settings-defaults';
 
 export { DEFAULT_SETTINGS };
 
-const store = createJsonStore<SiteSettings>('data/settings.json', () => ({ ...DEFAULT_SETTINGS }));
+const store = createJsonStore<SiteSettings>('settings', () => ({ ...DEFAULT_SETTINGS }));
 
 export async function getSettings(): Promise<SiteSettings> {
   const data = await store.get();
+  return { ...DEFAULT_SETTINGS, ...data };
+}
+
+export async function getSettingsFresh(): Promise<SiteSettings> {
+  const data = await store.getFresh();
   return { ...DEFAULT_SETTINGS, ...data };
 }
 

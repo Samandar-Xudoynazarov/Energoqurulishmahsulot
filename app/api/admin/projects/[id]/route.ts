@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProjects, upsertProject, deleteProject } from '../../../../lib/projects-store';
+import { getProjectsFresh as getProjects, upsertProject, deleteProject } from '../../../../lib/projects-store';
 import { deleteBlobFile } from '../../../../lib/products-store';
 import { normalizeProject } from '../normalize';
 

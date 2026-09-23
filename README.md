@@ -1,6 +1,6 @@
 # ENERGOQURILISHMAHSULOT — sayt
 
-Next.js 14 + Vercel Blob. Admin panel: `/admin`.
+Next.js 14 + Supabase Storage. Admin panel: `/admin`.
 
 ## Environment o'zgaruvchilari
 `.env.example` faylini ko'ring. Vercel → Project → Settings → Environment Variables'ga qo'shing:
@@ -8,9 +8,23 @@ Next.js 14 + Vercel Blob. Admin panel: `/admin`.
 | O'zgaruvchi | Nima uchun |
 |---|---|
 | `ADMIN_PASSWORD` | Admin panel paroli |
-| `BLOB_READ_WRITE_TOKEN` | Mahsulotlar, loyihalar, rasmlar saqlanadi (Vercel Blob) |
+| `SUPABASE_URL` | Supabase loyiha manzili |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Secret key — rasmlar va ma'lumotlar saqlanadi |
 | `TELEGRAM_BOT_TOKEN` | So'rov formalari yuboriladigan bot |
 | `TELEGRAM_CHAT_ID` | Qabul qiluvchi chat(lar), vergul bilan |
+
+### Supabase'ni sozlash (5 daqiqa, bepul)
+1. https://supabase.com → **Start your project** → GitHub yoki email bilan kiring (karta so'ralmaydi).
+2. **New project**: nom — `energoqurilish`, parol — istalgan, region — **Central EU (Frankfurt)** yoki **Singapore**.
+3. Loyiha tayyor bo'lgach: **Project Settings → API Keys** (yoki **Data API**):
+   - **Project URL** → `SUPABASE_URL`
+   - **Secret key** (`sb_secret_...`) yoki `service_role` → `SUPABASE_SERVICE_ROLE_KEY`
+4. Vercel → Settings → Environment Variables'ga ikkalasini kiriting → **Redeploy**.
+5. Bucket (`site`) birinchi yuklashda avtomatik yaratiladi — qo'lda hech narsa qilish shart emas.
+
+Sayt ma'lumotlarni 10 daqiqa keshlaydi va admin saqlaganda darhol yangilaydi — shuning uchun
+tashriflar soni Supabase limitlariga deyarli ta'sir qilmaydi. `vercel.json` dagi kunlik cron
+(`/api/keepalive`) bepul Supabase loyihasi "pauza"ga tushib qolmasligi uchun.
 
 ### Telegram botni sozlash (5 daqiqa)
 1. Telegram'da **@BotFather** → `/newbot` → nom bering → **token**ni nusxalang.

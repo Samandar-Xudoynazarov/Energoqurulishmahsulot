@@ -1,39 +1,46 @@
-import { put, list } from '@vercel/blob';
+import { unstable_cache, revalidateTag } from 'next/cache';
+import { readJson, writeJson } from './storage';
 
 /**
- * Vercel Blob'da bitta JSON fayl sifatida saqlanadigan oddiy ombor.
- * products-store / categories-store bilan bir xil yondashuv.
+ * Supabase Storage'dagi bitta JSON fayl.
+ * - get(): sayt uchun — Next.js keshidan (10 daqiqa yoki admin saqlaganda darhol yangilanadi).
+ *   Shu tufayli har bir tashrif Supabase'ga so'rov yubormaydi.
+ * - getFresh(): admin panel uchun — har doim eng yangi holat.
  */
 export function createJsonStore<T>(key: string, seed: () => T) {
-  let cache: { data: T; fetchedAt: number } | null = null;
-  const CACHE_TTL_MS = 5000;
+  const path = `data/${key}.json`;
+  const tag = `store:${key}`;
 
-  async function save(data: T): Promise<void> {
-    await put(key, JSON.stringify(data, null, 2), {
-      access: 'public',
-      contentType: 'application/json',
-      addRandomSuffix: false,
-      allowOverwrite: true,
-    });
-    cache = { data, fetchedAt: Date.now() };
+  async function getFresh(): Promise<T> {
+    try {
+      const data = await readJson<T>(path);
+      return data ?? seed();
+    } catch (err) {
+      console.error(`json-store getFresh(${key}) error, falling back to seed:`, err);
+      return seed();
+    }
   }
 
+  // Xato bo'lsa — keshga yozilmaydi (throw), faqat muvaffaqiyatli natija keshlanadi
+  const cached = unstable_cache(async () => (await readJson<T>(path)) ?? null, [tag], { revalidate: 600, tags: [tag] });
+
   async function get(): Promise<T> {
-    if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) return cache.data;
     try {
-      const { blobs } = await list({ prefix: key, limit: 1 });
-      const match = blobs.find((b) => b.pathname === key);
-      if (!match) return seed();
-      const res = await fetch(match.url, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`Failed to fetch ${key} from blob`);
-      const data = (await res.json()) as T;
-      cache = { data, fetchedAt: Date.now() };
-      return data;
+      return (await cached()) ?? seed();
     } catch (err) {
       console.error(`json-store get(${key}) error, falling back to seed:`, err);
       return seed();
     }
   }
 
-  return { get, save };
+  async function save(data: T): Promise<void> {
+    await writeJson(path, data);
+    try {
+      revalidateTag(tag);
+    } catch {
+      /* revalidateTag faqat request ichida ishlaydi */
+    }
+  }
+
+  return { get, getFresh, save };
 }

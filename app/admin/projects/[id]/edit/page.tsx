@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getProjects } from '../../../../lib/projects-store';
+import { getProjectsFresh as getProjects } from '../../../../lib/projects-store';
 import ProjectForm from '../../../components/ProjectForm';
 
 export const dynamic = 'force-dynamic';

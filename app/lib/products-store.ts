@@ -1,11 +1,9 @@
-import { put, list, del } from '@vercel/blob';
 import { Product } from '../types';
 import { fullModalData } from '../data/modalData';
+import { createJsonStore } from './json-store';
+import { deleteByUrl } from './storage';
 
-const PRODUCTS_KEY = 'data/products.json';
-
-// Default/seed data derived from the original hardcoded modalData,
-// used the very first time the site runs before any admin edits exist.
+// Boshlang'ich ma'lumot — admin hali hech narsa saqlamagan bo'lsa ishlatiladi.
 function seedProducts(): Product[] {
   const categoryFor = (code: string): Product['category'] => {
     if (['jamoa', 'texnika', 'avtopark'].includes(code)) return 'jamoa';
@@ -27,68 +25,31 @@ function seedProducts(): Product[] {
   }));
 }
 
-let cache: { data: Product[]; fetchedAt: number } | null = null;
-const CACHE_TTL_MS = 5000;
+const store = createJsonStore<Product[]>('products', seedProducts);
 
-export async function getProducts(): Promise<Product[]> {
-  if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
-    return cache.data;
-  }
-
-  try {
-    const { blobs } = await list({ prefix: PRODUCTS_KEY, limit: 1 });
-    const match = blobs.find((b) => b.pathname === PRODUCTS_KEY);
-
-    if (!match) {
-      const seeded = seedProducts();
-      await saveProducts(seeded);
-      return seeded;
-    }
-
-    const res = await fetch(match.url, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to fetch products.json from blob');
-    const data = (await res.json()) as Product[];
-    cache = { data, fetchedAt: Date.now() };
-    return data;
-  } catch (err) {
-    console.error('getProducts error, falling back to seed data:', err);
-    return seedProducts();
-  }
-}
-
-export async function saveProducts(products: Product[]): Promise<void> {
-  await put(PRODUCTS_KEY, JSON.stringify(products, null, 2), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
-  cache = { data: products, fetchedAt: Date.now() };
-}
+/** Sayt uchun (keshlangan) */
+export const getProducts = store.get;
+/** Admin panel uchun (har doim yangi) */
+export const getProductsFresh = store.getFresh;
+export const saveProducts = store.save;
 
 export async function upsertProduct(product: Product): Promise<Product[]> {
-  const products = await getProducts();
+  const products = await getProductsFresh();
   const idx = products.findIndex((p) => p.code === product.code);
-  if (idx >= 0) {
-    products[idx] = product;
-  } else {
-    products.push(product);
-  }
+  if (idx >= 0) products[idx] = product;
+  else products.push(product);
   await saveProducts(products);
   return products;
 }
 
 export async function deleteProduct(code: string): Promise<Product[]> {
-  const products = await getProducts();
+  const products = await getProductsFresh();
   const filtered = products.filter((p) => p.code !== code);
   await saveProducts(filtered);
   return filtered;
 }
 
+/** Eski nom saqlab qolindi — endi Supabase'dan o'chiradi */
 export async function deleteBlobFile(url: string): Promise<void> {
-  try {
-    await del(url);
-  } catch (err) {
-    console.error('deleteBlobFile error:', err);
-  }
+  await deleteByUrl(url);
 }

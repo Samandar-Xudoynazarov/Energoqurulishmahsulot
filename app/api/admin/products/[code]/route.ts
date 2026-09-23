@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProducts, upsertProduct, deleteProduct, deleteBlobFile } from '../../../../lib/products-store';
+import { getProductsFresh as getProducts, upsertProduct, deleteProduct, deleteBlobFile } from '../../../../lib/products-store';
 import { Product } from '../../../../types';
+
+export const dynamic = 'force-dynamic';
 
 export async function PUT(req: NextRequest, { params }: { params: { code: string } }) {
   try {

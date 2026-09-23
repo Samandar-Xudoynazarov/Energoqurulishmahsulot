@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProjects, upsertProject } from '../../../lib/projects-store';
+import { getProjectsFresh as getProjects, upsertProject } from '../../../lib/projects-store';
 import { Project } from '../../../types';
 import { normalizeProject } from './normalize';
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { compressImage } from '../../lib/compress-image';
+import { uploadFile } from '../lib/upload';
 
 interface FileUploaderProps {
   label: string;
@@ -20,19 +20,10 @@ export default function FileUploader({ label, kind, value, onUploaded }: FileUpl
     setError('');
     setUploading(true);
     try {
-      const toUpload = kind === 'image' ? await compressImage(file) : file;
-      const formData = new FormData();
-      formData.append('file', toUpload);
-      formData.append('kind', kind);
-      const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Yuklashda xatolik');
-        return;
-      }
-      onUploaded(data.url);
-    } catch {
-      setError('Yuklashda xatolik yuz berdi');
+      const url = await uploadFile(file, kind);
+      onUploaded(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Yuklashda xatolik yuz berdi');
     } finally {
       setUploading(false);
       e.target.value = '';

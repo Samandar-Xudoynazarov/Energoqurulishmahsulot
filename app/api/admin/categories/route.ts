@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCategories, addCategory } from '../../../lib/categories-store';
+import { getCategoriesFresh as getCategories, addCategory } from '../../../lib/categories-store';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const categories = await getCategories();
