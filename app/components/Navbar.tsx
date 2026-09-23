@@ -9,9 +9,13 @@ interface NavbarProps {
   currentLang: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  /** Boshqa sahifalarda (masalan mahsulot sahifasi) anchor'lar bosh sahifaga olib borishi uchun, masalan "/ru" */
+  basePath?: string;
+  /** Til almashtirganda qaysi URL'ga o'tish (standart: /uz, /ru, /en) */
+  langHref?: (lang: Language) => string;
 }
 
-export default function Navbar({ currentLang, setLanguage, t }: NavbarProps) {
+export default function Navbar({ currentLang, setLanguage, t, basePath = '', langHref }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
@@ -29,7 +33,7 @@ export default function Navbar({ currentLang, setLanguage, t }: NavbarProps) {
   return (
     <nav>
       <div className="container">
-        <Link href="/" className="logo">
+        <Link href={`/${currentLang}`} className="logo">
           <Image src="/logo.png" alt="EQM logo" width={44} height={44} priority />
         </Link>
         <button 
@@ -42,14 +46,14 @@ export default function Navbar({ currentLang, setLanguage, t }: NavbarProps) {
         <ul className={`nav-links${mobileOpen ? ' active' : ''}`}>
           {navItems.map((item) => (
             <li key={item.key}>
-              <a href={item.href} onClick={() => setMobileOpen(false)}>{t(item.key)}</a>
+              <a href={`${basePath}${item.href}`} onClick={() => setMobileOpen(false)}>{t(item.key)}</a>
             </li>
           ))}
           <li className="lang-switch">
             {languages.map((lang) => (
               <Link
                 key={lang}
-                href={`/${lang}`}
+                href={langHref ? langHref(lang) : `/${lang}`}
                 hrefLang={lang}
                 className={`lang-btn${currentLang === lang ? ' active' : ''}`}
                 onClick={() => setLanguage(lang)}

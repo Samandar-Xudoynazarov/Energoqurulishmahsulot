@@ -57,3 +57,32 @@ export interface ModalDataItem {
 export interface ModalData {
   [key: string]: ModalDataItem;
 }
+
+export interface Project {
+  id: string;
+  title: LocalizedText;
+  location: LocalizedText;
+  description: LocalizedText;
+  year: string;
+  images: string[];
+  productCodes: string[];
+  order: number;
+}
+
+export interface SiteSettings {
+  phone: string;
+  email: string;
+  telegramUsername: string;
+  aboutImage: string;
+}
+
+export interface InquiryPayload {
+  name: string;
+  phone: string;
+  email?: string;
+  company?: string;
+  message?: string;
+  productCode?: string;
+  locale?: string;
+  website?: string; // honeypot
+}

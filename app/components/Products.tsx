@@ -1,6 +1,7 @@
 "use client";
 
 import { Product, Category, Language } from '../types';
+import { productUrl } from '../lib/product-utils';
 
 interface ProductsProps {
   t: (key: string) => string;
@@ -46,10 +47,21 @@ export default function Products({ t, currentLang, openModal, products, categori
             </h3>
             <div className="product-grid">
               {items.map((item) => (
-                <div key={item.code} className="product-item" onClick={() => openModal(item.code)}>
+                <a
+                  key={item.code}
+                  href={productUrl(currentLang, item.code)}
+                  className="product-item"
+                  title={item.name[currentLang] || item.name.uz}
+                  onClick={(e) => {
+                    // Oddiy bosishda modal ochiladi; Ctrl/Cmd+bosish yoki qidiruv botlari — alohida sahifaga
+                    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                    e.preventDefault();
+                    openModal(item.code);
+                  }}
+                >
                   <div className="p-icon"><i className={`fas ${iconFor(item.category)}`}></i></div>
                   <div className="p-name">{item.code}</div>
-                </div>
+                </a>
               ))}
             </div>
             {cat.id === 'tayanch' && (

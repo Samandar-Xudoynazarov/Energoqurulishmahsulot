@@ -3,6 +3,13 @@
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
+const NAV = [
+  { href: '/admin', label: 'Mahsulotlar' },
+  { href: '/admin/categories', label: 'Kategoriyalar' },
+  { href: '/admin/projects', label: 'Loyihalar' },
+  { href: '/admin/settings', label: 'Sozlamalar' },
+];
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -23,9 +30,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         background: '#0f1e2e', color: '#fff', padding: '1rem 1.5rem',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <Link href="/admin" style={{ color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
-          ENERGOQURILISHMAHSULOT — Admin
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <Link href="/admin" style={{ color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
+            ENERGOQURILISHMAHSULOT — Admin
+          </Link>
+          <nav style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem' }}>
+            {NAV.map((item) => {
+              const active = item.href === '/admin'
+                ? pathname === '/admin' || pathname.startsWith('/admin/products')
+                : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  style={{
+                    color: active ? '#f4a51c' : 'rgba(255,255,255,0.8)',
+                    textDecoration: 'none',
+                    fontWeight: active ? 700 : 500,
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
         <button
           onClick={handleLogout}
           style={{

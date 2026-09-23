@@ -1,10 +1,14 @@
 "use client";
 
+import { realImage } from '../lib/product-utils';
+
 interface AboutProps {
   t: (key: string) => string;
+  image?: string;
 }
 
-export default function About({ t }: AboutProps) {
+export default function About({ t, image }: AboutProps) {
+  const img = realImage(image);
   return (
     <section id="about" className="container">
       <h2 className="section-title">{t('about_title')}</h2>
@@ -28,7 +32,13 @@ export default function About({ t }: AboutProps) {
             </div>
           </div>
         </div>
-        <div className="about-image">{t('about_image')}</div>
+        {img ? (
+          <div className="about-image about-image--photo">
+            <img src={img} alt={t('about_image')} loading="lazy" />
+          </div>
+        ) : (
+          <div className="about-image">{t('about_image')}</div>
+        )}
       </div>
     </section>
   );

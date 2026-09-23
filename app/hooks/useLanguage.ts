@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Language, Translations } from '../types';
+import { extraTranslations } from '../data/extraTranslations';
 
 export const translations: Translations = {
   uz: {
@@ -264,7 +265,7 @@ export function useLanguage(initialLang: Language = 'uz') {
 
   const t = useCallback(
     (key: string) => {
-      return translations[currentLang][key] || key;
+      return translations[currentLang][key] || extraTranslations[currentLang][key] || key;
     },
     [currentLang]
   );

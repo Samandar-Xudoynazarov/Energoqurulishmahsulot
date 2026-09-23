@@ -1,6 +1,7 @@
 import { ModalData } from '../types';
 
-const IMG = (label: string) => `https://via.placeholder.com/600x350/1a3f62/ffffff?text=${encodeURIComponent(label)}`;
+// Rasm admin panel orqali yuklanadi; boshlang'ich qiymat bo'sh
+const IMG = (_label: string) => '';
 
 export const fullModalData: ModalData = {
   jamoa: {

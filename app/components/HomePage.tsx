@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-import { Language, Product, Category } from '../types';
+import { Language, Product, Category, Project, SiteSettings } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
@@ -18,8 +18,18 @@ import Clients from './Clients';
 import Contact from './Contact';
 import Footer from './Footer';
 import Modal from './Modal';
+import FloatingContact from './FloatingContact';
+import { DEFAULT_SETTINGS } from '../lib/settings-defaults';
 
-export default function HomePage({ locale, initialProducts, initialCategories }: { locale: Language; initialProducts?: Product[]; initialCategories?: Category[] }) {
+interface HomePageProps {
+  locale: Language;
+  initialProducts?: Product[];
+  initialCategories?: Category[];
+  projects?: Project[];
+  settings?: SiteSettings;
+}
+
+export default function HomePage({ locale, initialProducts, initialCategories, projects = [], settings = DEFAULT_SETTINGS }: HomePageProps) {
   const { currentLang, setLanguage, t } = useLanguage(locale);
   const { products } = useProducts(initialProducts || []);
   const { categories } = useCategories(initialCategories || []);
@@ -37,16 +47,17 @@ export default function HomePage({ locale, initialProducts, initialCategories }:
     <>
       <Navbar currentLang={currentLang} setLanguage={setLanguage} t={t} />
       <Hero t={t} />
-      <About t={t} />
+      <About t={t} image={settings.aboutImage} />
       <Team t={t} openModal={openModal} />
       <Products t={t} currentLang={currentLang} openModal={openModal} products={products} categories={categories} />
       <Process t={t} />
       <Certificates t={t} />
-      <Projects t={t} />
+      <Projects t={t} currentLang={currentLang} projects={projects} products={products} />
       <WhyUs t={t} />
       <Clients t={t} />
-      <Contact t={t} />
+      <Contact t={t} locale={currentLang} settings={settings} />
       <Footer t={t} />
+      <FloatingContact settings={settings} t={t} />
       <Modal modalKey={modalKey} currentLang={currentLang} onClose={closeModal} products={products} />
     </>
   );

@@ -22,7 +22,7 @@ const jsonLd = {
     "Energoqurilishmahsulot",
   ],
   url: SITE_URL,
-  logo: `${SITE_URL}/favicon.ico`,
+  logo: `${SITE_URL}/logo.png`,
   description:
     "50 yildan ortiq tajribaga ega, energetika va sanoat uchun temir-beton fundamentlar, tayanch ustunlar, lotok va plitalar ishlab chiqaruvchi zavod. Завод железобетонных изделий для энергетики. Reinforced concrete products factory for the energy sector.",
   address: {
