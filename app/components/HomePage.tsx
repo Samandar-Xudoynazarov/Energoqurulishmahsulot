@@ -50,9 +50,9 @@ export default function HomePage({ locale, initialProducts, initialCategories, p
       <Navbar currentLang={currentLang} setLanguage={setLanguage} t={t} />
       <Hero t={t} image={settings.heroImage} />
       <About t={t} image={settings.aboutImage} />
+      <Team t={t} lang={currentLang} cards={content.team} />
       <Products t={t} currentLang={currentLang} openModal={openModal} products={products} categories={categories} />
       <Process t={t} lang={currentLang} steps={content.process} />
-      <Team t={t} lang={currentLang} cards={content.team} />
       <Certificates t={t} />
       <Projects t={t} currentLang={currentLang} projects={projects} products={products} />
       <WhyUs t={t} lang={currentLang} cards={content.why} />
