@@ -138,9 +138,9 @@ export default async function ProductPage({ params }: { params: { locale: string
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <ProductPageView
         locale={locale}
+        related={related}
         product={product}
         category={category}
-        related={related}
         projects={usedIn}
         products={products}
         settings={settings}
