@@ -1100,7 +1100,7 @@ a.product-item { display: block; color: inherit; }
 .price-tag .price-value { font-weight: 800; color: var(--primary); line-height: 1.15; letter-spacing: -0.5px; }
 .price-tag .price-value small { font-size: 0.55em; font-weight: 700; color: var(--gray-text); letter-spacing: 0; }
 .price-tag .price-note { font-size: 0.82rem; color: var(--gray-text); }
-.price-tag .price-note b { color: #0f7a45; font-weight: 700; }
+.price-tag .price-from { font-size: 0.55em; font-weight: 700; color: var(--gray-text); margin-right: 6px; letter-spacing: 0; }
 .price-lg .price-value { font-size: 2rem; }
 .price-sm { margin: 10px 0 4px; }
 .price-sm .price-value { font-size: 1.45rem; }

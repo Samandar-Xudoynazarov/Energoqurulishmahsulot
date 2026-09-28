@@ -12,10 +12,10 @@ interface ModalProps {
   products: Product[];
 }
 
-const LABELS: Record<Language, { noData: string; noDesc: string; certificate: string; passport: string; specs: string; openNewTab: string; details: string; quote: string; noVat: string; unit: string; cur: string }> = {
-  uz: { noData: "Ma'lumot mavjud emas", noDesc: "Bu element uchun batafsil ma'lumot hali qo'shilmagan.", certificate: 'Sertifikat', passport: 'Pasport', specs: 'Texnik xususiyatlar', openNewTab: 'Yangi oynada ochish', details: 'Batafsil sahifa', quote: 'Sotib olish', noVat: 'QQSsiz', unit: '1 dona uchun', cur: "so'm" },
-  ru: { noData: 'Информация недоступна', noDesc: 'Подробная информация для этого элемента пока не добавлена.', certificate: 'Сертификат', passport: 'Паспорт', specs: 'Технические характеристики', openNewTab: 'Открыть в новой вкладке', details: 'Подробная страница', quote: 'Купить', noVat: 'без НДС', unit: 'за 1 шт.', cur: 'сум' },
-  en: { noData: 'No data available', noDesc: 'Detailed information for this item has not been added yet.', certificate: 'Certificate', passport: 'Passport', specs: 'Technical specifications', openNewTab: 'Open in new tab', details: 'Full page', quote: 'Buy', noVat: 'excl. VAT', unit: 'per unit', cur: 'UZS' },
+const LABELS: Record<Language, { noData: string; noDesc: string; certificate: string; passport: string; specs: string; openNewTab: string; details: string; quote: string; from: string; unit: string; cur: string }> = {
+  uz: { noData: "Ma'lumot mavjud emas", noDesc: "Bu element uchun batafsil ma'lumot hali qo'shilmagan.", certificate: 'Sertifikat', passport: 'Pasport', specs: 'Texnik xususiyatlar', openNewTab: 'Yangi oynada ochish', details: 'Batafsil sahifa', quote: 'Sotib olish', from: '', unit: '1 dona uchun', cur: "so'mdan" },
+  ru: { noData: 'Информация недоступна', noDesc: 'Подробная информация для этого элемента пока не добавлена.', certificate: 'Сертификат', passport: 'Паспорт', specs: 'Технические характеристики', openNewTab: 'Открыть в новой вкладке', details: 'Подробная страница', quote: 'Купить', from: 'от', unit: 'за 1 шт.', cur: 'сум' },
+  en: { noData: 'No data available', noDesc: 'Detailed information for this item has not been added yet.', certificate: 'Certificate', passport: 'Passport', specs: 'Technical specifications', openNewTab: 'Open in new tab', details: 'Full page', quote: 'Buy', from: 'from', unit: 'per unit', cur: 'UZS' },
 };
 
 export default function Modal({ modalKey, currentLang, onClose, products }: ModalProps) {
@@ -78,8 +78,8 @@ export default function Modal({ modalKey, currentLang, onClose, products }: Moda
 
           {pageUrl && hasPrice(product) && (
             <div className="price-tag price-sm">
-              <span className="price-value">{formatPrice(product.price)} <small>{labels.cur}</small></span>
-              <span className="price-note"><b>{labels.noVat}</b> · {labels.unit}</span>
+              <span className="price-value">{labels.from && <span className="price-from">{labels.from}</span>}{formatPrice(product.price)} <small>{labels.cur}</small></span>
+              <span className="price-note">{labels.unit}</span>
             </div>
           )}
 

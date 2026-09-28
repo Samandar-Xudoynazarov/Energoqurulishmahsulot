@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Category, Language, Product, Project, SiteSettings } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
-import { productSlug, productUrl, realImage, hasPrice, formatPrice } from '../lib/product-utils';
+import { productSlug, productUrl, realImage, hasPrice, formatPrice, priceFrom } from '../lib/product-utils';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import InquiryForm from './InquiryForm';
@@ -153,7 +153,7 @@ export default function ProductPageView({ locale, product, category, related, pr
                   <a key={r.code} href={productUrl(lang, r.code)} className="product-item" title={r.name[lang] || r.name.uz}>
                     <div className="p-icon"><i className="fas fa-cube"></i></div>
                     <div className="p-name">{r.code}</div>
-                    {hasPrice(r) && <div className="p-price">{formatPrice(r.price)} <small>{t('price_currency')}</small></div>}
+                    {hasPrice(r) && <div className="p-price">{priceFrom(t) && <>{priceFrom(t)} </>}{formatPrice(r.price)} <small>{t('price_currency_from')}</small></div>}
                   </a>
                 ))}
               </div>

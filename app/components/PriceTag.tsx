@@ -1,7 +1,7 @@
 "use client";
 
 import { Product } from '../types';
-import { formatPrice, hasPrice } from '../lib/product-utils';
+import { formatPrice, hasPrice, priceFrom } from '../lib/product-utils';
 
 interface Props {
   product: Product;
@@ -9,7 +9,7 @@ interface Props {
   size?: 'lg' | 'sm';
 }
 
-/** Narx — QQSsiz, 1 dona uchun */
+/** Narx — «...dan / от ...», 1 dona uchun */
 export default function PriceTag({ product, t, size = 'lg' }: Props) {
   if (!hasPrice(product)) {
     return (
@@ -21,11 +21,10 @@ export default function PriceTag({ product, t, size = 'lg' }: Props) {
   return (
     <div className={`price-tag price-${size}`}>
       <span className="price-value">
-        {formatPrice(product.price)} <small>{t('price_currency')}</small>
+        {priceFrom(t) && <span className="price-from">{priceFrom(t)}</span>}
+        {formatPrice(product.price)} <small>{t('price_currency_from')}</small>
       </span>
-      <span className="price-note">
-        <b>{t('price_no_vat')}</b> · {t('price_per_unit')}
-      </span>
+      <span className="price-note">{t('price_per_unit')}</span>
     </div>
   );
 }

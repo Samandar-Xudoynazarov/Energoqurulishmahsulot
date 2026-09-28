@@ -51,3 +51,9 @@ export function formatPrice(n: number): string {
 export function hasPrice(p?: Product): p is Product & { price: number } {
   return !!p && typeof p.price === 'number' && p.price > 0;
 }
+
+/** «от» / «from» so'zi (o'zbekchada bo'sh — u yerda «so'mdan» deyiladi) */
+export function priceFrom(t: (k: string) => string): string {
+  const v = t('price_from');
+  return v && v !== 'price_from' ? v : '';
+}
