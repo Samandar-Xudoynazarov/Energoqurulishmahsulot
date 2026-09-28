@@ -108,6 +108,17 @@ export default async function ProductPage({ params }: { params: { locale: string
         name: s.label[locale] || s.label.uz,
         value: s.value,
       })),
+      offers: product.price && product.price > 0
+        ? {
+            '@type': 'Offer',
+            url,
+            price: product.price,
+            priceCurrency: 'UZS',
+            availability: 'https://schema.org/InStock',
+            priceSpecification: { '@type': 'UnitPriceSpecification', price: product.price, priceCurrency: 'UZS', valueAddedTaxIncluded: false },
+            seller: { '@type': 'Organization', name: 'ENERGOQURILISHMAHSULOT MCHJ' },
+          }
+        : undefined,
     },
     {
       '@context': 'https://schema.org',

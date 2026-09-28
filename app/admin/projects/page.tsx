@@ -52,52 +52,52 @@ export default function AdminProjectsPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ margin: 0 }}>Loyihalar (portfolio)</h1>
-        <Link href="/admin/projects/new" style={btnPrimary}>+ Yangi loyiha</Link>
+      <div className="a-page-head">
+        <div>
+          <h1>Loyihalar</h1>
+          <p>«Bizning yirik loyihalarimiz» bo&apos;limi: har bir loyihaga bir nechta rasm yuklash mumkin.</p>
+        </div>
+        <Link href="/admin/projects/new" className="a-btn a-btn-primary"><i className="fas fa-plus"></i> Yangi loyiha</Link>
       </div>
 
-      {error && <p style={{ color: '#c0392b' }}>{error}</p>}
-      {!projects && !error && <p>Yuklanmoqda...</p>}
-      {projects && projects.length === 0 && (
-        <div style={{ background: '#fff', borderRadius: 10, padding: '2rem', textAlign: 'center', color: '#667' }}>
-          Hali loyiha qo&apos;shilmagan. Birinchi loyihangizni qo&apos;shing — u saytdagi &quot;Loyihalar&quot; bo&apos;limida paydo bo&apos;ladi.
-        </div>
-      )}
+      {error && <div className="a-msg err">{error}</div>}
 
-      {projects && projects.length > 0 && (
-        <div style={{ display: 'grid', gap: 12 }}>
-          {projects.map((p, i) => (
-            <div key={p.id} style={{ background: '#fff', borderRadius: 10, padding: '0.8rem', display: 'flex', gap: 14, alignItems: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.06)' }}>
-              {p.images[0] ? (
-                <img src={p.images[0]} alt="" style={{ width: 96, height: 64, objectFit: 'cover', borderRadius: 6 }} />
-              ) : (
-                <div style={{ width: 96, height: 64, background: '#ddd', borderRadius: 6 }} />
-              )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <strong>{p.title.uz}</strong>
-                <div style={{ fontSize: '0.85rem', color: '#667' }}>
-                  {[p.location.uz, p.year].filter(Boolean).join(' · ')}
-                  {' · '}{p.images.length} ta rasm · {p.productCodes.length} ta mahsulot
+      <div className="a-card">
+        {!projects && !error && <div className="a-loading"><i className="fas fa-spinner fa-spin"></i> Yuklanmoqda...</div>}
+        {projects && projects.length === 0 && (
+          <div className="a-empty">
+            <i className="fas fa-building"></i>
+            Hali loyiha qo&apos;shilmagan. Birinchi loyihangizni qo&apos;shing — u saytdagi «Loyihalar» bo&apos;limida paydo bo&apos;ladi.
+          </div>
+        )}
+        {projects && projects.length > 0 && (
+          <div className="a-list">
+            {projects.map((p, i) => (
+              <div key={p.id} className="a-list-item">
+                {p.images[0] ? <img src={p.images[0]} alt="" /> : <div className="ph"><i className="fas fa-image"></i></div>}
+                <div className="grow">
+                  <b>{p.title.uz}</b>
+                  <span>
+                    {[p.location.uz, p.year].filter(Boolean).join(' · ')}
+                  </span>
+                  <div className="a-chips" style={{ marginTop: 6 }}>
+                    <span className={`a-badge ${p.images.length ? 'blue' : 'warn'}`}><i className="fas fa-images"></i> {p.images.length} ta rasm</span>
+                    <span className="a-badge"><i className="fas fa-cube"></i> {p.productCodes.length} ta mahsulot</span>
+                  </div>
+                </div>
+                <div className="a-row-actions">
+                  <button onClick={() => move(i, -1)} disabled={i === 0 || busy !== null} className="a-btn a-btn-sm a-btn-ghost a-icon-btn" title="Yuqoriga"><i className="fas fa-arrow-up"></i></button>
+                  <button onClick={() => move(i, 1)} disabled={i === projects.length - 1 || busy !== null} className="a-btn a-btn-sm a-btn-ghost a-icon-btn" title="Pastga"><i className="fas fa-arrow-down"></i></button>
+                  <Link href={`/admin/projects/${p.id}/edit`} className="a-btn a-btn-sm"><i className="fas fa-pen"></i> Tahrirlash</Link>
+                  <button onClick={() => handleDelete(p)} disabled={busy === p.id} className="a-btn a-btn-sm a-btn-danger a-icon-btn" title="O'chirish">
+                    <i className={`fas ${busy === p.id ? 'fa-spinner fa-spin' : 'fa-trash-alt'}`}></i>
+                  </button>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <button onClick={() => move(i, -1)} disabled={i === 0 || busy !== null} style={miniBtn}>↑</button>
-                <button onClick={() => move(i, 1)} disabled={i === projects.length - 1 || busy !== null} style={miniBtn}>↓</button>
-                <Link href={`/admin/projects/${p.id}/edit`} style={{ color: '#1a3f62', margin: '0 8px' }}>Tahrirlash</Link>
-                <button onClick={() => handleDelete(p)} disabled={busy === p.id} style={{ background: 'none', border: 'none', color: '#c0392b', cursor: 'pointer' }}>
-                  {busy === p.id ? "O'chirilmoqda..." : "O'chirish"}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-const btnPrimary: React.CSSProperties = {
-  background: '#1a3f62', color: '#fff', padding: '0.6rem 1.2rem', borderRadius: 8, textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem',
-};
-const miniBtn: React.CSSProperties = { background: '#eee', border: 'none', borderRadius: 6, cursor: 'pointer', padding: '0.3rem 0.6rem' };

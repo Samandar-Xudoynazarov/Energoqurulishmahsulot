@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProductsFresh as getProducts, upsertProduct } from '../../../lib/products-store';
 import { Product } from '../../../types';
+import { cleanPrice } from '../../../lib/catalog-import';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +41,7 @@ export async function POST(req: NextRequest) {
       passportPdf: body.passportPdf || undefined,
       specs: Array.isArray(body.specs) ? body.specs : [],
       order: products.length,
+      price: cleanPrice(body.price),
     };
 
     const updated = await upsertProduct(product);

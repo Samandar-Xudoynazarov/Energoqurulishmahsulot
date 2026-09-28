@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Category, Language } from '../../types';
+import LangTabs from '../components/LangTabs';
 
 const LANG_TABS: { value: Language; label: string }[] = [
   { value: 'uz', label: "O'zbekcha" },
@@ -100,114 +101,80 @@ export default function AdminCategoriesPage() {
     }
   }
 
+  const visible = (categories || []).filter((c) => c.id !== 'jamoa').sort((a, b) => a.order - b.order);
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ margin: 0 }}>Kategoriyalar</h1>
-        <Link href="/admin" style={{ color: '#1a3f62' }}>← Mahsulotlarga qaytish</Link>
+      <div className="a-page-head">
+        <div>
+          <h1>Kategoriyalar</h1>
+          <p>Saytdagi mahsulot guruhlari (Fundamentlar, Lotoklar ...).</p>
+        </div>
+        <Link href="/admin" className="a-btn"><i className="fas fa-arrow-left"></i> Mahsulotlar</Link>
       </div>
 
-      {error && <p style={{ color: '#c0392b' }}>{error}</p>}
-      {!categories && <p>Yuklanmoqda...</p>}
+      {error && <div className="a-msg err">{error}</div>}
 
-      {categories && (
-        <div style={{ background: '#fff', borderRadius: 10, padding: '1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', marginBottom: '1.5rem' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ textAlign: 'left', borderBottom: '2px solid #eee' }}>
-                <th style={th}>Nomi (uz / ru / en)</th>
-                <th style={th}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.sort((a, b) => a.order - b.order).map((cat) => (
-                <tr key={cat.id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={td}>
-                    {editingId === cat.id ? (
-                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        {LANG_TABS.map((t) => (
-                          <input
-                            key={t.value}
-                            value={editName[t.value]}
-                            onChange={(e) => setEditName((n) => ({ ...n, [t.value]: e.target.value }))}
-                            placeholder={t.label}
-                            style={inputSmall}
-                          />
-                        ))}
+      <div className="a-card flush">
+        {!categories && <div className="a-loading"><i className="fas fa-spinner fa-spin"></i> Yuklanmoqda...</div>}
+        {categories && (
+          <div className="a-table-wrap">
+            <table className="a-table">
+              <thead>
+                <tr><th>O&apos;zbekcha</th><th>Русский</th><th>English</th><th></th></tr>
+              </thead>
+              <tbody>
+                {visible.map((cat) => (
+                  <tr key={cat.id}>
+                    {LANG_TABS.map((t) => (
+                      <td key={t.value}>
+                        {editingId === cat.id ? (
+                          <input className="a-input" value={editName[t.value]} onChange={(e) => setEditName((n) => ({ ...n, [t.value]: e.target.value }))} placeholder={t.label} />
+                        ) : (
+                          t.value === 'uz' ? <b>{cat.name.uz}</b> : cat.name[t.value]
+                        )}
+                      </td>
+                    ))}
+                    <td>
+                      <div className="a-row-actions">
+                        {editingId === cat.id ? (
+                          <>
+                            <button onClick={() => saveEdit(cat.id)} disabled={busyId === cat.id} className="a-btn a-btn-sm a-btn-primary"><i className="fas fa-check"></i> Saqlash</button>
+                            <button onClick={() => setEditingId(null)} className="a-btn a-btn-sm">Bekor</button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => startEdit(cat)} className="a-btn a-btn-sm"><i className="fas fa-pen"></i> Tahrirlash</button>
+                            <button onClick={() => handleDelete(cat.id)} disabled={busyId === cat.id} className="a-btn a-btn-sm a-btn-danger a-icon-btn" title="O'chirish">
+                              <i className={`fas ${busyId === cat.id ? 'fa-spinner fa-spin' : 'fa-trash-alt'}`}></i>
+                            </button>
+                          </>
+                        )}
                       </div>
-                    ) : (
-                      <span>{cat.name.uz} / {cat.name.ru} / {cat.name.en}</span>
-                    )}
-                  </td>
-                  <td style={{ ...td, textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    {editingId === cat.id ? (
-                      <>
-                        <button onClick={() => saveEdit(cat.id)} disabled={busyId === cat.id} style={linkBtn}>Saqlash</button>
-                        <button onClick={() => setEditingId(null)} style={linkBtnMuted}>Bekor qilish</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => startEdit(cat)} style={linkBtn}>Tahrirlash</button>
-                        <button onClick={() => handleDelete(cat.id)} disabled={busyId === cat.id} style={linkBtnDanger}>
-                          {busyId === cat.id ? '...' : 'O\'chirish'}
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
-      <div style={{ background: '#fff', borderRadius: 10, padding: '1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.06)' }}>
-        <h3 style={{ marginTop: 0 }}>Yangi kategoriya qo'shish</h3>
-        <div style={{ display: 'flex', gap: 8, marginBottom: '1rem', borderBottom: '2px solid #eee' }}>
-          {LANG_TABS.map((t) => (
-            <button
-              key={t.value}
-              type="button"
-              onClick={() => setActiveLang(t.value)}
-              style={{
-                padding: '0.5rem 1rem', border: 'none', background: 'none', cursor: 'pointer',
-                fontWeight: activeLang === t.value ? 700 : 400,
-                borderBottom: activeLang === t.value ? '2px solid #1a3f62' : '2px solid transparent',
-                marginBottom: -2,
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+      <div className="a-card">
+        <div className="a-card-head">
+          <div>
+            <h2><i className="fas fa-plus-circle"></i> Yangi kategoriya</h2>
+            <p>Har uch tilda nom kiriting, keyin «Qo&apos;shish» tugmasini bosing.</p>
+          </div>
+          <LangTabs value={activeLang} onChange={setActiveLang} missing={newName} />
         </div>
-        <form onSubmit={handleAdd} style={{ display: 'flex', gap: 8 }}>
-          <input
-            value={newName[activeLang]}
-            onChange={(e) => setNewName((n) => ({ ...n, [activeLang]: e.target.value }))}
-            placeholder={`Kategoriya nomi (${activeLang})`}
-            style={{ ...inputSmall, flex: 1 }}
-          />
-          <button type="submit" disabled={adding} style={btnPrimary}>
-            {adding ? 'Qo\'shilmoqda...' : '+ Qo\'shish'}
+        <form onSubmit={handleAdd} className="a-actions" style={{ flexWrap: 'nowrap' }}>
+          <input className="a-input" value={newName[activeLang]} onChange={(e) => setNewName((n) => ({ ...n, [activeLang]: e.target.value }))} placeholder={`Kategoriya nomi (${activeLang})`} />
+          <button type="submit" disabled={adding} className="a-btn a-btn-primary">
+            <i className="fas fa-plus"></i> {adding ? "Qo'shilmoqda..." : "Qo'shish"}
           </button>
         </form>
-        <p style={{ fontSize: '0.8rem', color: '#889', marginTop: '0.5rem' }}>
-          Eslatma: har uch tilda ({LANG_TABS.map((t) => t.label).join(', ')}) nom kiriting, keyin "Qo'shish" tugmasini bosing.
-        </p>
       </div>
     </div>
   );
 }
-
-const th: React.CSSProperties = { padding: '0.6rem 0', fontSize: '0.85rem', color: '#556' };
-const td: React.CSSProperties = { padding: '0.6rem 0' };
-const inputSmall: React.CSSProperties = {
-  padding: '0.5rem 0.7rem', borderRadius: 6, border: '1px solid #ccc', fontSize: '0.85rem',
-};
-const btnPrimary: React.CSSProperties = {
-  background: '#1a3f62', color: '#fff', padding: '0.5rem 1.2rem', borderRadius: 8,
-  border: 'none', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem',
-};
-const linkBtn: React.CSSProperties = { background: 'none', border: 'none', color: '#1a3f62', cursor: 'pointer', marginRight: 12, fontSize: '0.85rem' };
-const linkBtnMuted: React.CSSProperties = { ...linkBtn, color: '#889' };
-const linkBtnDanger: React.CSSProperties = { ...linkBtn, color: '#c0392b', marginRight: 0 };

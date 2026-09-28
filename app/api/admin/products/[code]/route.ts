@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProductsFresh as getProducts, upsertProduct, deleteProduct, deleteBlobFile } from '../../../../lib/products-store';
 import { Product } from '../../../../types';
+import { cleanPrice } from '../../../../lib/catalog-import';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: { code: string
       certificatePdf: body.certificatePdf ?? existing.certificatePdf,
       passportPdf: body.passportPdf ?? existing.passportPdf,
       specs: Array.isArray(body.specs) ? body.specs : existing.specs,
+      price: body.price !== undefined ? cleanPrice(body.price) : existing.price,
     };
 
     // Eski fayllar yangisiga almashtirilgan bo'lsa, Blob'dan tozalash

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-import { Language, Product, Category, Project, SiteSettings } from '../types';
+import { Language, Product, Category, Project, SiteSettings, SiteContent } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
@@ -20,6 +20,7 @@ import Footer from './Footer';
 import Modal from './Modal';
 import FloatingContact from './FloatingContact';
 import { DEFAULT_SETTINGS } from '../lib/settings-defaults';
+import { defaultContent } from '../lib/content-defaults';
 
 interface HomePageProps {
   locale: Language;
@@ -27,9 +28,10 @@ interface HomePageProps {
   initialCategories?: Category[];
   projects?: Project[];
   settings?: SiteSettings;
+  content?: SiteContent;
 }
 
-export default function HomePage({ locale, initialProducts, initialCategories, projects = [], settings = DEFAULT_SETTINGS }: HomePageProps) {
+export default function HomePage({ locale, initialProducts, initialCategories, projects = [], settings = DEFAULT_SETTINGS, content = defaultContent() }: HomePageProps) {
   const { currentLang, setLanguage, t } = useLanguage(locale);
   const { products } = useProducts(initialProducts || []);
   const { categories } = useCategories(initialCategories || []);
@@ -46,14 +48,14 @@ export default function HomePage({ locale, initialProducts, initialCategories, p
   return (
     <>
       <Navbar currentLang={currentLang} setLanguage={setLanguage} t={t} />
-      <Hero t={t} />
+      <Hero t={t} image={settings.heroImage} />
       <About t={t} image={settings.aboutImage} />
-      <Team t={t} openModal={openModal} />
       <Products t={t} currentLang={currentLang} openModal={openModal} products={products} categories={categories} />
-      <Process t={t} />
+      <Process t={t} lang={currentLang} steps={content.process} />
+      <Team t={t} lang={currentLang} cards={content.team} />
       <Certificates t={t} />
       <Projects t={t} currentLang={currentLang} projects={projects} products={products} />
-      <WhyUs t={t} />
+      <WhyUs t={t} lang={currentLang} cards={content.why} />
       <Clients t={t} />
       <Contact t={t} locale={currentLang} settings={settings} />
       <Footer t={t} />

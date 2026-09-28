@@ -2,13 +2,17 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import './admin.css';
 
 const NAV = [
-  { href: '/admin', label: 'Mahsulotlar' },
-  { href: '/admin/categories', label: 'Kategoriyalar' },
-  { href: '/admin/projects', label: 'Loyihalar' },
-  { href: '/admin/settings', label: 'Sozlamalar' },
-];
+  { group: 'Katalog' },
+  { href: '/admin', label: 'Mahsulotlar', icon: 'fa-cubes', match: (p: string) => p === '/admin' || p.startsWith('/admin/products') },
+  { href: '/admin/categories', label: 'Kategoriyalar', icon: 'fa-layer-group' },
+  { group: 'Sayt' },
+  { href: '/admin/content', label: "Sayt bo'limlari", icon: 'fa-th-large' },
+  { href: '/admin/projects', label: 'Loyihalar', icon: 'fa-building' },
+  { href: '/admin/settings', label: 'Sozlamalar va rasmlar', icon: 'fa-sliders-h' },
+] as const;
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -25,48 +29,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f4f6f8', fontFamily: 'Inter, sans-serif' }}>
-      <header style={{
-        background: '#0f1e2e', color: '#fff', padding: '1rem 1.5rem',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-          <Link href="/admin" style={{ color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: '1.1rem' }}>
-            ENERGOQURILISHMAHSULOT — Admin
-          </Link>
-          <nav style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem' }}>
-            {NAV.map((item) => {
-              const active = item.href === '/admin'
-                ? pathname === '/admin' || pathname.startsWith('/admin/products')
-                : pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  style={{
-                    color: active ? '#f4a51c' : 'rgba(255,255,255,0.8)',
-                    textDecoration: 'none',
-                    fontWeight: active ? 700 : 500,
-                  }}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+    <div className="adm">
+      <aside className="a-side">
+        <Link href="/admin" className="a-brand">
+          <span className="a-brand-mark">E</span>
+          <span>
+            <b>ENERGOQURILISH</b>
+            <small>Boshqaruv paneli</small>
+          </span>
+        </Link>
+        <div className="a-nav" role="navigation">
+          {NAV.map((item, i) => {
+            if ('group' in item) return <div key={i} className="a-nav-label">{item.group}</div>;
+            const active = 'match' in item ? item.match(pathname) : pathname.startsWith(item.href);
+            return (
+              <Link key={item.href} href={item.href} className={active ? 'active' : ''}>
+                <i className={`fas ${item.icon}`}></i> {item.label}
+              </Link>
+            );
+          })}
         </div>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: 'transparent', border: '1px solid #fff', color: '#fff',
-            padding: '0.4rem 1rem', borderRadius: 6, cursor: 'pointer',
-          }}
-        >
-          Chiqish
-        </button>
-      </header>
-      <main style={{ padding: '1.5rem', maxWidth: 1000, margin: '0 auto' }}>
-        {children}
+        <div className="a-side-foot">
+          <a href="/" target="_blank" rel="noreferrer">
+            <i className="fas fa-external-link-alt"></i> <span>Saytni ochish</span>
+          </a>
+          <button type="button" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i> <span>Chiqish</span>
+          </button>
+        </div>
+      </aside>
+      <main className="a-main">
+        <div className="a-container">{children}</div>
       </main>
     </div>
   );

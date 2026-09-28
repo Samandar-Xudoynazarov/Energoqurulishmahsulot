@@ -8,9 +8,13 @@ interface FileUploaderProps {
   kind: 'image' | 'pdf';
   value?: string;
   onUploaded: (url: string) => void;
+  /** Berilsa — "Olib tashlash" tugmasi ko'rinadi */
+  onRemove?: () => void;
+  hint?: string;
+  wide?: boolean;
 }
 
-export default function FileUploader({ label, kind, value, onUploaded }: FileUploaderProps) {
+export default function FileUploader({ label, kind, value, onUploaded, onRemove, hint, wide }: FileUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,24 +35,32 @@ export default function FileUploader({ label, kind, value, onUploaded }: FileUpl
   }
 
   return (
-    <div style={{ marginBottom: '1rem' }}>
-      <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.9rem' }}>{label}</label>
-      {value && kind === 'image' && (
-        <img src={value} alt="preview" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 8, marginBottom: '0.5rem', display: 'block' }} />
-      )}
-      {value && kind === 'pdf' && (
-        <a href={value} target="_blank" rel="noreferrer" style={{ display: 'block', marginBottom: '0.5rem', color: '#1a3f62' }}>
-          📄 Joriy PDF faylni ko'rish
-        </a>
-      )}
-      <input
-        type="file"
-        accept={kind === 'image' ? 'image/*' : 'application/pdf'}
-        onChange={handleFileChange}
-        disabled={uploading}
-      />
-      {uploading && <p style={{ fontSize: '0.85rem', color: '#667' }}>Yuklanmoqda...</p>}
-      {error && <p style={{ fontSize: '0.85rem', color: '#c0392b' }}>{error}</p>}
+    <div className="a-field">
+      <label>{label}</label>
+      <div className={`a-upload${value ? ' has' : ''}${wide ? ' wide' : ''}`}>
+        <div className="a-upload-prev">
+          {value && kind === 'image' ? <img src={value} alt="" /> : <i className={`fas ${kind === 'pdf' ? 'fa-file-pdf' : 'fa-image'}`}></i>}
+        </div>
+        <div className="a-upload-body">
+          {value && kind === 'pdf' && (
+            <a href={value} target="_blank" rel="noreferrer" className="a-hint"><i className="fas fa-external-link-alt"></i> Joriy PDF faylni ko&apos;rish</a>
+          )}
+          {!value && <span className="a-hint">{hint || (kind === 'image' ? 'JPG, PNG yoki WEBP — avtomatik siqiladi' : 'PDF fayl')}</span>}
+          <div className="a-actions">
+            <span className={`a-btn a-btn-sm a-file-btn${uploading ? ' disabled' : ''}`}>
+              <i className={`fas ${uploading ? 'fa-spinner fa-spin' : 'fa-upload'}`}></i>
+              {uploading ? 'Yuklanmoqda...' : value ? 'Almashtirish' : 'Fayl tanlash'}
+              <input type="file" accept={kind === 'image' ? 'image/*' : 'application/pdf'} onChange={handleFileChange} disabled={uploading} />
+            </span>
+            {value && onRemove && (
+              <button type="button" className="a-btn a-btn-sm a-btn-danger" onClick={onRemove}>
+                <i className="fas fa-trash-alt"></i> Olib tashlash
+              </button>
+            )}
+          </div>
+          {error && <span className="a-field-warn">{error}</span>}
+        </div>
+      </div>
     </div>
   );
 }

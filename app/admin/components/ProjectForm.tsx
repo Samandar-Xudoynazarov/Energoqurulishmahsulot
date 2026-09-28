@@ -4,12 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Language, Product, Project } from '../../types';
 import MultiImageUploader from './MultiImageUploader';
+import LangTabs, { LANGS as LANG_TABS } from './LangTabs';
+import Link from 'next/link';
 
-const LANG_TABS: { value: Language; label: string }[] = [
-  { value: 'uz', label: "O'zbekcha" },
-  { value: 'ru', label: 'Русский' },
-  { value: 'en', label: 'English' },
-];
 
 type Draft = Omit<Project, 'id' | 'order'> & { id?: string };
 
@@ -82,95 +79,72 @@ export default function ProjectForm({ initial }: { initial?: Project }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={card}>
-      <h1 style={{ marginTop: 0 }}>{isEdit ? 'Loyihani tahrirlash' : 'Yangi loyiha'}</h1>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: '1rem', borderBottom: '2px solid #eee' }}>
-        {LANG_TABS.map((t) => (
-          <button
-            key={t.value}
-            type="button"
-            onClick={() => setActiveLang(t.value)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none', background: 'none', cursor: 'pointer',
-              fontWeight: activeLang === t.value ? 700 : 400,
-              borderBottom: activeLang === t.value ? '2px solid #1a3f62' : '2px solid transparent',
-              marginBottom: -2,
-            }}
-          >
-            {t.label}{!project.title[t.value].trim() && ' •'}
-          </button>
-        ))}
-      </div>
-
-      <div style={row}>
-        <label style={label}>Loyiha nomi ({activeLang}) *</label>
-        <input value={project.title[activeLang]} onChange={(e) => setText('title', e.target.value)} style={input}
-          placeholder={activeLang === 'ru' ? 'Подстанция 500 кВ «Сырдарья»' : '500 kV "Sirdaryo" podstansiyasi'} />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
-        <div style={row}>
-          <label style={label}>Joylashuv ({activeLang})</label>
-          <input value={project.location[activeLang]} onChange={(e) => setText('location', e.target.value)} style={input}
-            placeholder={activeLang === 'ru' ? 'Сырдарьинская обл.' : 'Sirdaryo viloyati'} />
-        </div>
-        <div style={row}>
-          <label style={label}>Yil</label>
-          <input value={project.year} onChange={(e) => setProject((p) => ({ ...p, year: e.target.value }))} style={input} placeholder="2024" />
-        </div>
-      </div>
-      <div style={row}>
-        <label style={label}>Tavsif ({activeLang})</label>
-        <textarea value={project.description[activeLang]} onChange={(e) => setText('description', e.target.value)}
-          style={{ ...input, minHeight: 100, resize: 'vertical' }}
-          placeholder="Qanday obyekt, qancha hajmda mahsulot yetkazildi, qisqacha natija..." />
-      </div>
-
-      <MultiImageUploader label="Rasmlar" value={project.images} onChange={(images) => setProject((p) => ({ ...p, images }))} />
-
-      <div style={row}>
-        <label style={label}>Yetkazilgan mahsulotlar</label>
-        <p style={{ fontSize: '0.8rem', color: '#889', margin: '0 0 0.6rem' }}>
-          Belgilangan mahsulotlar sahifasida &quot;Ushbu mahsulot ishlatilgan loyihalar&quot; bo&apos;limida bu loyiha ko&apos;rinadi.
-        </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {products.map((p) => {
-            const on = project.productCodes.includes(p.code);
-            return (
-              <button type="button" key={p.code} onClick={() => toggleCode(p.code)}
-                style={{
-                  padding: '0.35rem 0.8rem', borderRadius: 16, cursor: 'pointer', fontSize: '0.85rem',
-                  border: on ? '1px solid #1a3f62' : '1px solid #ccc',
-                  background: on ? '#1a3f62' : '#fff', color: on ? '#fff' : '#333',
-                }}>
-                {p.code}
-              </button>
-            );
-          })}
-          {products.length === 0 && <span style={{ color: '#889', fontSize: '0.85rem' }}>Yuklanmoqda...</span>}
+    <form onSubmit={handleSubmit}>
+      <div className="a-page-head">
+        <div>
+          <h1>{isEdit ? 'Loyihani tahrirlash' : 'Yangi loyiha'}</h1>
+          <p><Link href="/admin/projects"><i className="fas fa-arrow-left"></i> Loyihalar ro&apos;yxati</Link></p>
         </div>
       </div>
 
-      {error && <p style={{ color: '#c0392b' }}>{error}</p>}
+      <div className="a-card">
+        <div className="a-card-head">
+          <h2><i className="fas fa-align-left"></i> Ma&apos;lumot</h2>
+          <LangTabs value={activeLang} onChange={setActiveLang} missing={project.title} />
+        </div>
+        <div className="a-field">
+          <label>Loyiha nomi ({activeLang}) *</label>
+          <input value={project.title[activeLang]} onChange={(e) => setText('title', e.target.value)}
+            placeholder={activeLang === 'ru' ? 'Подстанция 500 кВ «Сырдарья»' : '500 kV "Sirdaryo" podstansiyasi'} />
+        </div>
+        <div className="a-grid-2">
+          <div className="a-field">
+            <label>Joylashuv ({activeLang})</label>
+            <input value={project.location[activeLang]} onChange={(e) => setText('location', e.target.value)}
+              placeholder={activeLang === 'ru' ? 'Сырдарьинская обл.' : 'Sirdaryo viloyati'} />
+          </div>
+          <div className="a-field">
+            <label>Yil</label>
+            <input value={project.year} onChange={(e) => setProject((p) => ({ ...p, year: e.target.value }))} placeholder="2024" />
+          </div>
+        </div>
+        <div className="a-field">
+          <label>Tavsif ({activeLang})</label>
+          <textarea rows={5} value={project.description[activeLang]} onChange={(e) => setText('description', e.target.value)}
+            placeholder="Qanday obyekt, qancha hajmda mahsulot yetkazildi, qisqacha natija..." />
+        </div>
+      </div>
 
-      <div style={{ marginTop: '1.5rem', display: 'flex', gap: 12 }}>
-        <button type="submit" disabled={saving} style={btnPrimary}>{saving ? 'Saqlanmoqda...' : 'Saqlash'}</button>
-        <button type="button" onClick={() => router.push('/admin/projects')} style={btnSecondary}>Bekor qilish</button>
+      <div className="a-card">
+        <div className="a-card-head"><h2><i className="fas fa-images"></i> Rasmlar</h2></div>
+        <MultiImageUploader label="Loyiha rasmlari" value={project.images} onChange={(images) => setProject((p) => ({ ...p, images }))} />
+      </div>
+
+      <div className="a-card">
+        <div className="a-card-head">
+          <div>
+            <h2><i className="fas fa-cubes"></i> Yetkazilgan mahsulotlar</h2>
+            <p>Belgilangan mahsulotlar sahifasida «Ushbu mahsulot ishlatilgan loyihalar» bo&apos;limida bu loyiha ko&apos;rinadi.</p>
+          </div>
+          <span className="a-badge blue">{project.productCodes.length} ta tanlangan</span>
+        </div>
+        <div className="a-chips">
+          {products.map((p) => (
+            <button type="button" key={p.code} onClick={() => toggleCode(p.code)} className={`a-chip${project.productCodes.includes(p.code) ? ' on' : ''}`}>
+              {p.code}
+            </button>
+          ))}
+          {products.length === 0 && <span className="a-hint">Yuklanmoqda...</span>}
+        </div>
+      </div>
+
+      <div className="a-savebar">
+        {error && <div className="a-msg err">{error}</div>}
+        <button type="button" onClick={() => router.push('/admin/projects')} className="a-btn">Bekor qilish</button>
+        <button type="submit" disabled={saving} className="a-btn a-btn-primary">
+          {saving ? <><i className="fas fa-spinner fa-spin"></i> Saqlanmoqda...</> : <><i className="fas fa-check"></i> Saqlash</>}
+        </button>
       </div>
     </form>
   );
 }
-
-const card: React.CSSProperties = { background: '#fff', borderRadius: 10, padding: '1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.06)' };
-const row: React.CSSProperties = { marginBottom: '1rem' };
-const label: React.CSSProperties = { display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.9rem' };
-const input: React.CSSProperties = {
-  width: '100%', padding: '0.6rem 0.8rem', borderRadius: 8, border: '1px solid #ccc', fontSize: '0.95rem', boxSizing: 'border-box',
-  fontFamily: 'inherit',
-};
-const btnPrimary: React.CSSProperties = {
-  background: '#1a3f62', color: '#fff', padding: '0.7rem 1.5rem', borderRadius: 8, border: 'none', fontWeight: 600, cursor: 'pointer',
-};
-const btnSecondary: React.CSSProperties = {
-  background: '#eee', color: '#333', padding: '0.7rem 1.5rem', borderRadius: 8, border: 'none', fontWeight: 600, cursor: 'pointer',
-};

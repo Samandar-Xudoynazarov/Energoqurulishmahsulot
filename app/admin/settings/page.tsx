@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { SiteSettings } from '../../types';
 import FileUploader from '../components/FileUploader';
 
@@ -16,10 +17,11 @@ export default function AdminSettingsPage() {
       .catch(() => setMsg({ ok: false, text: "Sozlamalarni yuklab bo'lmadi" }));
   }, []);
 
-  if (!settings) return <p>{msg?.text || 'Yuklanmoqda...'}</p>;
+  if (!settings) return <div className="a-loading">{msg?.text || <><i className="fas fa-spinner fa-spin"></i> Yuklanmoqda...</>}</div>;
 
   const set = (field: keyof SiteSettings) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setSettings((s) => (s ? { ...s, [field]: e.target.value } : s));
+  const setImg = (field: 'aboutImage' | 'heroImage', url: string) => setSettings((s) => (s ? { ...s, [field]: url } : s));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,52 +46,73 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: 10, padding: '1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.06)' }}>
-      <h1 style={{ marginTop: 0 }}>Sayt sozlamalari</h1>
-      <p style={{ color: '#667', marginTop: 0 }}>
-        Bu ma&apos;lumotlar saytdagi &quot;Bog&apos;lanish&quot; bo&apos;limida va ekran burchagidagi qo&apos;ng&apos;iroq / Telegram tugmalarida ko&apos;rinadi.
-        Bo&apos;sh qoldirilgan maydon saytda ko&apos;rsatilmaydi.
-      </p>
-
-      <div style={row}>
-        <label style={label}>Telefon raqami</label>
-        <input value={settings.phone} onChange={set('phone')} style={input} placeholder="+998 71 123-45-67" />
-      </div>
-      <div style={row}>
-        <label style={label}>Telegram username (bot emas, menejer yoki kanal)</label>
-        <input value={settings.telegramUsername} onChange={set('telegramUsername')} style={input} placeholder="energoqurilish_sales" />
-      </div>
-      <div style={row}>
-        <label style={label}>Email</label>
-        <input type="email" value={settings.email} onChange={set('email')} style={input} placeholder="info@energoqurilishmahsulot.uz" />
+    <form onSubmit={handleSubmit}>
+      <div className="a-page-head">
+        <div>
+          <h1>Sozlamalar va rasmlar</h1>
+          <p>Aloqa ma&apos;lumotlari, zavod rasmi va bosh ekran foni.</p>
+        </div>
       </div>
 
-      <FileUploader
-        label={'"Biz haqimizda" bo\'limidagi zavod rasmi'}
-        kind="image"
-        value={settings.aboutImage}
-        onUploaded={(url) => setSettings((s) => (s ? { ...s, aboutImage: url } : s))}
-      />
-      {settings.aboutImage && (
-        <button type="button" onClick={() => setSettings((s) => (s ? { ...s, aboutImage: '' } : s))}
-          style={{ background: 'none', border: 'none', color: '#c0392b', cursor: 'pointer', padding: 0, marginBottom: '1rem' }}>
-          Rasmni olib tashlash
+      <div className="a-card">
+        <div className="a-card-head">
+          <div>
+            <h2><i className="fas fa-image"></i> Sayt rasmlari</h2>
+            <p>Ishlab chiqarish bosqichlari, jamoa va «Nima uchun biz» rasmlari — <Link href="/admin/content">Sayt bo&apos;limlari</Link> sahifasida.</p>
+          </div>
+        </div>
+        <div className="a-grid-2">
+          <FileUploader
+            wide
+            label="Zavod rasmi («Biz haqimizda» bo'limi)"
+            hint="Zavodning umumiy ko'rinishi — gorizontal rasm tavsiya etiladi"
+            kind="image"
+            value={settings.aboutImage}
+            onUploaded={(url) => setImg('aboutImage', url)}
+            onRemove={() => setImg('aboutImage', '')}
+          />
+          <FileUploader
+            wide
+            label="Bosh ekran foni (eng yuqoridagi katta blok)"
+            hint="Keng rasm (masalan 1920×1080). Ustiga to'q ko'k qatlam qo'yiladi — matn o'qiladi"
+            kind="image"
+            value={settings.heroImage}
+            onUploaded={(url) => setImg('heroImage', url)}
+            onRemove={() => setImg('heroImage', '')}
+          />
+        </div>
+      </div>
+
+      <div className="a-card">
+        <div className="a-card-head">
+          <div>
+            <h2><i className="fas fa-address-book"></i> Aloqa</h2>
+            <p>«Bog&apos;lanish» bo&apos;limida va ekran burchagidagi tugmalarda ko&apos;rinadi. Bo&apos;sh maydon saytda ko&apos;rsatilmaydi.</p>
+          </div>
+        </div>
+        <div className="a-grid-3">
+          <div className="a-field">
+            <label>Telefon raqami</label>
+            <input value={settings.phone} onChange={set('phone')} placeholder="+998 71 123-45-67" />
+          </div>
+          <div className="a-field">
+            <label>Telegram username</label>
+            <input value={settings.telegramUsername} onChange={set('telegramUsername')} placeholder="energoqurilish_sales" />
+            <span className="a-hint">Bot emas — menejer yoki kanal</span>
+          </div>
+          <div className="a-field">
+            <label>Email</label>
+            <input type="email" value={settings.email} onChange={set('email')} placeholder="info@energoqurilishmahsulot.uz" />
+          </div>
+        </div>
+      </div>
+
+      <div className="a-savebar">
+        {msg && <div className={`a-msg ${msg.ok ? 'ok' : 'err'}`}>{msg.text}</div>}
+        <button type="submit" disabled={saving} className="a-btn a-btn-primary">
+          {saving ? <><i className="fas fa-spinner fa-spin"></i> Saqlanmoqda...</> : <><i className="fas fa-check"></i> Saqlash</>}
         </button>
-      )}
-
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: '0.5rem' }}>
-        <button type="submit" disabled={saving} style={btnPrimary}>{saving ? 'Saqlanmoqda...' : 'Saqlash'}</button>
-        {msg && <span style={{ color: msg.ok ? '#27ae60' : '#c0392b' }}>{msg.text}</span>}
       </div>
     </form>
   );
 }
-
-const row: React.CSSProperties = { marginBottom: '1rem' };
-const label: React.CSSProperties = { display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.9rem' };
-const input: React.CSSProperties = {
-  width: '100%', padding: '0.6rem 0.8rem', borderRadius: 8, border: '1px solid #ccc', fontSize: '0.95rem', boxSizing: 'border-box',
-};
-const btnPrimary: React.CSSProperties = {
-  background: '#1a3f62', color: '#fff', padding: '0.7rem 1.5rem', borderRadius: 8, border: 'none', fontWeight: 600, cursor: 'pointer',
-};

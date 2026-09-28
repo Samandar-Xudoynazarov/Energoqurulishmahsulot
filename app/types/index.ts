@@ -39,6 +39,37 @@ export interface Product {
   passportPdf?: string;
   specs: ProductSpec[];
   order: number;
+  /** Narx — QQSsiz, so'm, 1 dona uchun. 0 yoki yo'q — narx ko'rsatilmaydi */
+  price?: number;
+}
+
+/** PTO katalogidagi mahsulot (import uchun) */
+export interface CatalogItem {
+  code: string;
+  category: string;
+  name: LocalizedText;
+  tag: LocalizedText;
+  description: LocalizedText;
+  specs: ProductSpec[];
+  price: number;
+}
+
+/** Bosh sahifa bo'limlaridagi karta (jamoa, texnika, ishlab chiqarish bosqichi, "nima uchun biz") */
+export interface ContentCard {
+  id: string;
+  icon: string;
+  image: string;
+  images?: string[];
+  title: LocalizedText;
+  desc: LocalizedText;
+  /** Batafsil matn (oynada ko'rsatiladi) */
+  body?: LocalizedText;
+}
+
+export interface SiteContent {
+  team: ContentCard[];
+  process: ContentCard[];
+  why: ContentCard[];
 }
 
 export interface ModalContent {
@@ -74,6 +105,8 @@ export interface SiteSettings {
   email: string;
   telegramUsername: string;
   aboutImage: string;
+  /** Bosh ekran (hero) fon rasmi */
+  heroImage: string;
 }
 
 export interface InquiryPayload {
@@ -83,6 +116,7 @@ export interface InquiryPayload {
   company?: string;
   message?: string;
   productCode?: string;
+  quantity?: number;
   locale?: string;
   website?: string; // honeypot
 }

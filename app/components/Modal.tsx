@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Language, Product } from '../types';
-import { productUrl, realImage, isRealProduct } from '../lib/product-utils';
+import { productUrl, realImage, isRealProduct, hasPrice, formatPrice } from '../lib/product-utils';
 import ProtectedImage from './ProtectedImage';
 
 interface ModalProps {
@@ -12,10 +12,10 @@ interface ModalProps {
   products: Product[];
 }
 
-const LABELS: Record<Language, { noData: string; noDesc: string; certificate: string; passport: string; specs: string; openNewTab: string; details: string; quote: string }> = {
-  uz: { noData: "Ma'lumot mavjud emas", noDesc: "Bu element uchun batafsil ma'lumot hali qo'shilmagan.", certificate: 'Sertifikat', passport: 'Pasport', specs: 'Texnik xususiyatlar', openNewTab: 'Yangi oynada ochish', details: 'Batafsil sahifa', quote: "Narx so'rash" },
-  ru: { noData: 'Информация недоступна', noDesc: 'Подробная информация для этого элемента пока не добавлена.', certificate: 'Сертификат', passport: 'Паспорт', specs: 'Технические характеристики', openNewTab: 'Открыть в новой вкладке', details: 'Подробная страница', quote: 'Запросить цену' },
-  en: { noData: 'No data available', noDesc: 'Detailed information for this item has not been added yet.', certificate: 'Certificate', passport: 'Passport', specs: 'Technical specifications', openNewTab: 'Open in new tab', details: 'Full page', quote: 'Request a quote' },
+const LABELS: Record<Language, { noData: string; noDesc: string; certificate: string; passport: string; specs: string; openNewTab: string; details: string; quote: string; noVat: string; unit: string; cur: string }> = {
+  uz: { noData: "Ma'lumot mavjud emas", noDesc: "Bu element uchun batafsil ma'lumot hali qo'shilmagan.", certificate: 'Sertifikat', passport: 'Pasport', specs: 'Texnik xususiyatlar', openNewTab: 'Yangi oynada ochish', details: 'Batafsil sahifa', quote: 'Sotib olish', noVat: 'QQSsiz', unit: '1 dona uchun', cur: "so'm" },
+  ru: { noData: 'Информация недоступна', noDesc: 'Подробная информация для этого элемента пока не добавлена.', certificate: 'Сертификат', passport: 'Паспорт', specs: 'Технические характеристики', openNewTab: 'Открыть в новой вкладке', details: 'Подробная страница', quote: 'Купить', noVat: 'без НДС', unit: 'за 1 шт.', cur: 'сум' },
+  en: { noData: 'No data available', noDesc: 'Detailed information for this item has not been added yet.', certificate: 'Certificate', passport: 'Passport', specs: 'Technical specifications', openNewTab: 'Open in new tab', details: 'Full page', quote: 'Buy', noVat: 'excl. VAT', unit: 'per unit', cur: 'UZS' },
 };
 
 export default function Modal({ modalKey, currentLang, onClose, products }: ModalProps) {
@@ -76,10 +76,17 @@ export default function Modal({ modalKey, currentLang, onClose, products }: Moda
           <h3>{title}</h3>
           {desc && <p className="modal-desc-clamp">{desc}</p>}
 
+          {pageUrl && hasPrice(product) && (
+            <div className="price-tag price-sm">
+              <span className="price-value">{formatPrice(product.price)} <small>{labels.cur}</small></span>
+              <span className="price-note"><b>{labels.noVat}</b> · {labels.unit}</span>
+            </div>
+          )}
+
           {pageUrl && (
             <div className="modal-actions">
               <a href={`${pageUrl}#inquiry`} className="btn-accent">
-                <i className="fas fa-file-invoice-dollar"></i> {labels.quote}
+                <i className="fas fa-shopping-cart"></i> {labels.quote}
               </a>
               <a href={pageUrl} className="btn-outline">
                 {labels.details} <i className="fas fa-arrow-right"></i>

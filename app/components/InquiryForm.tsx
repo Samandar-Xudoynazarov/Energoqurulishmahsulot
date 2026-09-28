@@ -2,19 +2,22 @@
 
 import { FormEvent, useState } from 'react';
 import { Language } from '../types';
+import { formatPrice } from '../lib/product-utils';
 
 interface InquiryFormProps {
   t: (key: string) => string;
   locale: Language;
   productCode?: string;
+  /** QQSsiz narx — taxminiy summani ko'rsatish uchun */
+  price?: number;
 }
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
-export default function InquiryForm({ t, locale, productCode }: InquiryFormProps) {
+export default function InquiryForm({ t, locale, productCode, price }: InquiryFormProps) {
   const [status, setStatus] = useState<Status>('idle');
   const [errorKey, setErrorKey] = useState('form_error');
-  const [form, setForm] = useState({ name: '', phone: '', email: '', company: '', message: '', website: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', company: '', message: '', website: '', quantity: '' });
 
   const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -31,11 +34,11 @@ export default function InquiryForm({ t, locale, productCode }: InquiryFormProps
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, productCode, locale }),
+        body: JSON.stringify({ ...form, quantity: Number(form.quantity) || undefined, productCode, locale }),
       });
       if (res.ok) {
         setStatus('success');
-        setForm({ name: '', phone: '', email: '', company: '', message: '', website: '' });
+        setForm({ name: '', phone: '', email: '', company: '', message: '', website: '', quantity: '' });
         return;
       }
       const data = await res.json().catch(() => ({}));
@@ -66,6 +69,20 @@ export default function InquiryForm({ t, locale, productCode }: InquiryFormProps
       {productCode && (
         <div className="form-product-chip">
           <i className="fas fa-cube"></i> {productCode}
+        </div>
+      )}
+      {productCode && (
+        <div className="form-qty">
+          <label>
+            <span>{t('form_quantity')}</span>
+            <input type="number" min={1} step={1} inputMode="numeric" value={form.quantity} onChange={set('quantity')} placeholder="1" />
+          </label>
+          {!!price && price > 0 && Number(form.quantity) > 0 && (
+            <div className="form-total">
+              <span>{t('form_total_estimate')}</span>
+              <b>{formatPrice(price * Math.floor(Number(form.quantity)))} {t('price_currency')}</b>
+            </div>
+          )}
         </div>
       )}
       <input type="text" placeholder={`${t('form_name')} *`} value={form.name} onChange={set('name')} autoComplete="name" required maxLength={100} />

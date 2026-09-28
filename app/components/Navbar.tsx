@@ -22,6 +22,7 @@ export default function Navbar({ currentLang, setLanguage, t, basePath = '', lan
     { href: '#about', key: 'nav_about' },
     { href: '#products', key: 'nav_products' },
     { href: '#process', key: 'nav_process' },
+    { href: '#team', key: 'nav_team' },
     { href: '#certificates', key: 'nav_cert' },
     { href: '#projects', key: 'nav_projects' },
     { href: '#contact', key: 'nav_contact' },

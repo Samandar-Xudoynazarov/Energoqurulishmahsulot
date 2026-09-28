@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, Category, Language } from '../types';
-import { productUrl } from '../lib/product-utils';
+import { productUrl, hasPrice, formatPrice } from '../lib/product-utils';
 
 interface ProductsProps {
   t: (key: string) => string;
@@ -61,6 +61,7 @@ export default function Products({ t, currentLang, openModal, products, categori
                 >
                   <div className="p-icon"><i className={`fas ${iconFor(item.category)}`}></i></div>
                   <div className="p-name">{item.code}</div>
+                  {hasPrice(item) && <div className="p-price">{formatPrice(item.price)} <small>{t('price_currency')}</small></div>}
                 </a>
               ))}
             </div>

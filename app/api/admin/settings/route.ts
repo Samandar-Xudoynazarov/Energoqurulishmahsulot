@@ -17,6 +17,9 @@ export async function PUT(req: NextRequest) {
     if (existing.aboutImage && existing.aboutImage !== settings.aboutImage) {
       await deleteBlobFile(existing.aboutImage);
     }
+    if (existing.heroImage && existing.heroImage !== settings.heroImage) {
+      await deleteBlobFile(existing.heroImage);
+    }
     return NextResponse.json({ settings });
   } catch (err) {
     console.error('PUT /api/admin/settings error:', err);

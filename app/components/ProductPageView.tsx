@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Category, Language, Product, Project, SiteSettings } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
-import { productSlug, productUrl, realImage } from '../lib/product-utils';
+import { productSlug, productUrl, realImage, hasPrice, formatPrice } from '../lib/product-utils';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import InquiryForm from './InquiryForm';
@@ -11,6 +11,7 @@ import FloatingContact from './FloatingContact';
 import { ProjectCard, ProjectModal } from './Projects';
 import { telHref } from './Contact';
 import ProtectedImage from './ProtectedImage';
+import PriceTag from './PriceTag';
 
 interface Props {
   locale: Language;
@@ -70,13 +71,6 @@ export default function ProductPageView({ locale, product, category, related, pr
                 </dl>
               )}
 
-              <div className="pp-cta">
-                <a href="#inquiry" className="btn-accent"><i className="fas fa-file-invoice-dollar"></i> {t('product_request_price')}</a>
-                {settings.phone && (
-                  <a href={telHref(settings.phone)} className="btn-outline"><i className="fas fa-phone-alt"></i> {settings.phone}</a>
-                )}
-              </div>
-
               {product.specs.length > 0 && (
                 <div className="pp-specs-wrap">
                   <h2 className="pp-specs-title">{t('product_specs')}</h2>
@@ -92,6 +86,16 @@ export default function ProductPageView({ locale, product, category, related, pr
                   </table>
                 </div>
               )}
+
+              <div className="pp-buy">
+                <PriceTag product={product} t={t} />
+                <div className="pp-cta">
+                  <a href="#inquiry" className="btn-accent btn-buy"><i className="fas fa-shopping-cart"></i> {t('product_buy')}</a>
+                  {settings.phone && (
+                    <a href={telHref(settings.phone)} className="btn-outline"><i className="fas fa-phone-alt"></i> {settings.phone}</a>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -137,7 +141,7 @@ export default function ProductPageView({ locale, product, category, related, pr
               <p>{t('product_inquiry_subtitle')}</p>
             </div>
             <div className="contact-form">
-              <InquiryForm t={t} locale={lang} productCode={product.code} />
+              <InquiryForm t={t} locale={lang} productCode={product.code} price={product.price} />
             </div>
           </section>
 
@@ -149,6 +153,7 @@ export default function ProductPageView({ locale, product, category, related, pr
                   <a key={r.code} href={productUrl(lang, r.code)} className="product-item" title={r.name[lang] || r.name.uz}>
                     <div className="p-icon"><i className="fas fa-cube"></i></div>
                     <div className="p-name">{r.code}</div>
+                    {hasPrice(r) && <div className="p-price">{formatPrice(r.price)} <small>{t('price_currency')}</small></div>}
                   </a>
                 ))}
               </div>

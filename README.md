@@ -44,3 +44,14 @@ tashriflar soni Supabase limitlariga deyarli ta'sir qilmaydi. `vercel.json` dagi
 - `/{til}/products/{slug}` — har bir mahsulotning alohida sahifasi (masalan `/ru/products/f5-amk`).
   Slug koddan avtomatik yasaladi: `Ф5-АМК → f5-amk`, `СБ-95/3 → sb-95-3`.
 - `/sitemap.xml` — barcha mahsulot sahifalari bilan
+
+## 2026-09 yangilanish: narxlar, katalog, bo'limlar
+
+- **PTO katalogi** (`app/data/catalog.ts`, 50 ta mahsulot): QQSsiz narx, xarakteristikalar va kengaytirilgan tavsif (uz/ru/en).
+  Admin → Mahsulotlar → **«PTO katalogidan yangilash»**: avval nima o'zgarishini ko'rsatadi, keyin qo'llaydi.
+  Rasmlar, PDF va kategoriyalarga tegmaydi; admin yozgan uzun tavsiflar (400+ belgi) saqlanib qoladi.
+- **Mahsulot sahifasi**: xarakteristikalar ostida QQSsiz narx va «Sotib olish» tugmasi; buyurtma formasida miqdor
+  va taxminiy summa. Telegram xabarida narx serverdagi ma'lumotdan hisoblanadi.
+- **Sayt bo'limlari** (`/admin/content`, `data/content.json`): ishlab chiqarish bosqichlari (rasm bilan),
+  jamoa va texnika (mahsulotlardan alohida; rasm + galereya + batafsil matn), «Nima uchun biz» (fon rasmli katta kartalar).
+- **Sozlamalar**: zavod rasmi («Biz haqimizda») va bosh ekran fon rasmi.

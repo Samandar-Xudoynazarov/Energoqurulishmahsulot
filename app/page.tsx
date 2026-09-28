@@ -5,6 +5,7 @@ import { getProducts } from './lib/products-store';
 import { getCategories } from './lib/categories-store';
 import { getProjects } from './lib/projects-store';
 import { getSettings } from './lib/settings-store';
+import { getContent } from './lib/content-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [products, categories, projects, settings] = await Promise.all([getProducts(), getCategories(), getProjects(), getSettings()]);
-  return <HomePage locale="uz" initialProducts={products} initialCategories={categories} projects={projects} settings={settings} />;
+  const [products, categories, projects, settings, content] = await Promise.all([getProducts(), getCategories(), getProjects(), getSettings(), getContent()]);
+  return <HomePage locale="uz" initialProducts={products} initialCategories={categories} projects={projects} settings={settings} content={content} />;
 }

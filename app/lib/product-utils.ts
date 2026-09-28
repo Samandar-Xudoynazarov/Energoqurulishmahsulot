@@ -42,3 +42,12 @@ export function realImage(url?: string): string {
 export function isValidLocale(l: string): l is Language {
   return l === 'uz' || l === 'ru' || l === 'en';
 }
+
+/** 6121507 -> "6 121 507" (server va brauzerda bir xil — hydration uchun toLocaleString ishlatilmaydi) */
+export function formatPrice(n: number): string {
+  return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+export function hasPrice(p?: Product): p is Product & { price: number } {
+  return !!p && typeof p.price === 'number' && p.price > 0;
+}

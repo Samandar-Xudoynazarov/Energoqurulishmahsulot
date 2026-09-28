@@ -5,4 +5,5 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   email: '',
   telegramUsername: '',
   aboutImage: '',
+  heroImage: '',
 };

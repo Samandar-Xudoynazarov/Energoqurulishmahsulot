@@ -2,6 +2,7 @@ import { Product } from '../types';
 import { fullModalData } from '../data/modalData';
 import { createJsonStore } from './json-store';
 import { deleteByUrl } from './storage';
+import { mergeCatalog } from './catalog-import';
 
 // Boshlang'ich ma'lumot — admin hali hech narsa saqlamagan bo'lsa ishlatiladi.
 function seedProducts(): Product[] {
@@ -13,7 +14,7 @@ function seedProducts(): Product[] {
     return 'maxsus';
   };
 
-  return Object.entries(fullModalData).map(([code, item], index) => ({
+  const base: Product[] = Object.entries(fullModalData).map(([code, item], index) => ({
     code,
     category: categoryFor(code),
     name: { uz: item.uz.title, ru: item.ru.title, en: item.en.title },
@@ -23,6 +24,8 @@ function seedProducts(): Product[] {
     specs: [],
     order: index,
   }));
+  // Yangi o'rnatishda PTO katalogi ham qo'shiladi (narx, xarakteristika, tavsif)
+  return mergeCatalog(base, { prices: true, specs: true, texts: true, addNew: true }).products;
 }
 
 const store = createJsonStore<Product[]>('products', seedProducts);

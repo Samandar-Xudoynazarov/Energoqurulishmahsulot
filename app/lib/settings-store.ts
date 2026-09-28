@@ -22,6 +22,7 @@ export async function saveSettings(settings: SiteSettings): Promise<SiteSettings
     email: String(settings.email || '').trim().slice(0, 120),
     telegramUsername: String(settings.telegramUsername || '').trim().replace(/^@/, '').replace(/^https?:\/\/t\.me\//, '').slice(0, 64),
     aboutImage: String(settings.aboutImage || '').trim(),
+    heroImage: String(settings.heroImage || '').trim(),
   };
   await store.save(clean);
   return clean;

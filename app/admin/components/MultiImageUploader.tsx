@@ -7,9 +7,11 @@ interface Props {
   label: string;
   value: string[];
   onChange: (urls: string[]) => void;
+  hint?: string;
+  coverLabel?: string | false;
 }
 
-export default function MultiImageUploader({ label, value, onChange }: Props) {
+export default function MultiImageUploader({ label, value, onChange, hint, coverLabel = 'Muqova' }: Props) {
   const [uploading, setUploading] = useState(0);
   const [error, setError] = useState('');
 
@@ -41,39 +43,33 @@ export default function MultiImageUploader({ label, value, onChange }: Props) {
   }
 
   return (
-    <div style={{ marginBottom: '1rem' }}>
-      <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem', fontSize: '0.9rem' }}>{label}</label>
-      <p style={{ fontSize: '0.8rem', color: '#889', margin: '0 0 0.6rem' }}>
-        Birinchi rasm — muqova. Tartibni ← → tugmalari bilan o'zgartiring.
-      </p>
+    <div className="a-field">
+      <label>{label}</label>
+      <p className="a-hint">{hint ?? "Birinchi rasm — muqova. Tartibni ← → tugmalari bilan o'zgartiring."}</p>
       {value.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+        <div className="a-gallery">
           {value.map((url, i) => (
-            <div key={url} style={{ position: 'relative', width: 120 }}>
-              <img
-                src={url}
-                alt=""
-                style={{
-                  width: 120, height: 90, objectFit: 'cover', borderRadius: 8, display: 'block',
-                  outline: i === 0 ? '3px solid #f4a51c' : 'none',
-                }}
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} style={miniBtn}>←</button>
-                <button type="button" onClick={() => onChange(value.filter((_, k) => k !== i))} style={{ ...miniBtn, color: '#c0392b' }}>✕</button>
-                <button type="button" onClick={() => move(i, 1)} disabled={i === value.length - 1} style={miniBtn}>→</button>
+            <div key={url} className={`a-gallery-item${i === 0 && coverLabel ? ' cover' : ''}`}>
+              {i === 0 && coverLabel && <span className="tag">{coverLabel}</span>}
+              <img src={url} alt="" />
+              <div className="bar">
+                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Chapga">←</button>
+                <button type="button" className="del" onClick={() => onChange(value.filter((_, k) => k !== i))} aria-label="O'chirish">✕</button>
+                <button type="button" onClick={() => move(i, 1)} disabled={i === value.length - 1} aria-label="O'ngga">→</button>
               </div>
             </div>
           ))}
         </div>
       )}
-      <input type="file" accept="image/*" multiple onChange={handleFiles} disabled={uploading > 0} />
-      {uploading > 0 && <p style={{ fontSize: '0.85rem', color: '#667' }}>Yuklanmoqda... ({uploading} ta qoldi)</p>}
-      {error && <p style={{ fontSize: '0.85rem', color: '#c0392b' }}>{error}</p>}
+      <div className="a-actions">
+        <span className="a-btn a-btn-sm a-file-btn">
+          <i className={`fas ${uploading ? 'fa-spinner fa-spin' : 'fa-images'}`}></i>
+          {uploading > 0 ? `Yuklanmoqda... (${uploading} ta qoldi)` : "Rasmlar qo'shish"}
+          <input type="file" accept="image/*" multiple onChange={handleFiles} disabled={uploading > 0} />
+        </span>
+        <span className="a-hint">{value.length} ta rasm</span>
+      </div>
+      {error && <span className="a-field-warn">{error}</span>}
     </div>
   );
 }
-
-const miniBtn: React.CSSProperties = {
-  background: '#eee', border: 'none', borderRadius: 4, cursor: 'pointer', padding: '2px 8px', fontSize: '0.8rem',
-};

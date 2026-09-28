@@ -6,6 +6,7 @@ import { getProducts } from '../lib/products-store';
 import { getCategories } from '../lib/categories-store';
 import { getProjects } from '../lib/projects-store';
 import { getSettings } from '../lib/settings-store';
+import { getContent } from '../lib/content-store';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,6 +49,6 @@ export function generateMetadata({ params }: { params: { locale: string } }): Me
 
 export default async function LocalePage({ params }: { params: { locale: string } }) {
   const locale = (['uz', 'ru', 'en'].includes(params.locale) ? params.locale : 'uz') as Language;
-  const [products, categories, projects, settings] = await Promise.all([getProducts(), getCategories(), getProjects(), getSettings()]);
-  return <HomePage locale={locale} initialProducts={products} initialCategories={categories} projects={projects} settings={settings} />;
+  const [products, categories, projects, settings, content] = await Promise.all([getProducts(), getCategories(), getProjects(), getSettings(), getContent()]);
+  return <HomePage locale={locale} initialProducts={products} initialCategories={categories} projects={projects} settings={settings} content={content} />;
 }
