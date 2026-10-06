@@ -7,6 +7,7 @@ import { Product, ProductSpec, Language, Category } from '../../types';
 import FileUploader from './FileUploader';
 import LangTabs, { LANGS } from './LangTabs';
 import { fmtSum } from '../lib/format';
+import { adminProductApi } from '../../lib/product-utils';
 
 // Rus tilidagi matnlarda Lotin harflari (a-z, A-Z) ishlatilishini taqiqlaymiz.
 // Mahsulot kodlari (Ф5-УСУ kabi) bu tekshiruvga kirmaydi — faqat nomi/teg/tavsif/tex.jadval uchun.
@@ -92,7 +93,7 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
 
     setSaving(true);
     try {
-      const url = isEdit ? `/api/admin/products/${encodeURIComponent(product.code)}` : '/api/admin/products';
+      const url = isEdit ? adminProductApi(product.code) : '/api/admin/products';
       const res = await fetch(url, {
         method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Product, Category } from '../types';
 import { fmtSum } from './lib/format';
+import { adminProductApi, adminProductEdit } from '../lib/product-utils';
 import ImportDialog from './components/ImportDialog';
 
 export default function AdminDashboard() {
@@ -41,7 +42,7 @@ export default function AdminDashboard() {
     if (!confirm(`"${code}" mahsulotini o'chirishni tasdiqlaysizmi?`)) return;
     setDeletingCode(code);
     try {
-      const res = await fetch(`/api/admin/products/${encodeURIComponent(code)}`, { method: 'DELETE' });
+      const res = await fetch(adminProductApi(code), { method: 'DELETE' });
       const data = await res.json();
       if (res.ok) setProducts(data.products);
       else alert(data.error || "O'chirishda xatolik");
@@ -130,7 +131,7 @@ export default function AdminDashboard() {
                     </td>
                     <td>
                       <div className="a-row-actions">
-                        <Link href={`/admin/products/${encodeURIComponent(p.code)}/edit`} className="a-btn a-btn-sm">
+                        <Link href={adminProductEdit(p.code)} className="a-btn a-btn-sm">
                           <i className="fas fa-pen"></i> Tahrirlash
                         </Link>
                         <button type="button" onClick={() => handleDelete(p.code)} disabled={deletingCode === p.code} className="a-btn a-btn-sm a-btn-danger a-icon-btn" title="O'chirish">

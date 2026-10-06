@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getProductsFresh as getProducts, upsertProduct, deleteProduct, deleteBlobFile } from '../../../../lib/products-store';
 import { Product } from '../../../../types';
 import { cleanPrice } from '../../../../lib/catalog-import';
+import { findProductBySlug, safeDecode } from '../../../../lib/product-utils';
+
+/** Mahsulotni topadi: avval ?code= (aniq), keyin yo'ldagi kod, oxirida slug bo'yicha */
+function findProduct(products: Product[], req: NextRequest, rawParam: string): Product | undefined {
+  const fromQuery = req.nextUrl.searchParams.get('code');
+  const candidates = [fromQuery, safeDecode(rawParam), rawParam].filter(Boolean) as string[];
+  for (const c of candidates) {
+    const hit = products.find((p) => p.code === c);
+    if (hit) return hit;
+  }
+  return findProductBySlug(products, rawParam);
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +21,7 @@ export async function PUT(req: NextRequest, { params }: { params: { code: string
   try {
     const body = await req.json();
     const products = await getProducts();
-    const existing = products.find((p) => p.code === params.code);
+    const existing = findProduct(products, req, params.code);
     if (!existing) {
       return NextResponse.json({ error: 'Mahsulot topilmadi' }, { status: 404 });
     }
@@ -49,7 +61,7 @@ export async function PUT(req: NextRequest, { params }: { params: { code: string
 export async function DELETE(req: NextRequest, { params }: { params: { code: string } }) {
   try {
     const products = await getProducts();
-    const existing = products.find((p) => p.code === params.code);
+    const existing = findProduct(products, req, params.code);
     if (!existing) {
       return NextResponse.json({ error: 'Mahsulot topilmadi' }, { status: 404 });
     }
@@ -59,7 +71,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { code: str
     if (existing.certificatePdf) await deleteBlobFile(existing.certificatePdf);
     if (existing.passportPdf) await deleteBlobFile(existing.passportPdf);
 
-    const updated = await deleteProduct(params.code);
+    const updated = await deleteProduct(existing.code);
     return NextResponse.json({ products: updated });
   } catch (err) {
     console.error('DELETE /api/admin/products/[code] error:', err);

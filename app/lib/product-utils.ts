@@ -57,3 +57,24 @@ export function priceFrom(t: (k: string) => string): string {
   const v = t('price_from');
   return v && v !== 'price_from' ? v : '';
 }
+
+/**
+ * Admin API manzili. Kod (masalan «СБ-95/3», «Ф5-Усу(250)») URL yo'lida emas, `?code=` da yuboriladi:
+ * yo'lda «/» va kirill harflari Next.js/Vercel'da noto'g'ri o'qilib, «Mahsulot topilmadi» xatosiga olib kelardi.
+ */
+export function adminProductApi(code: string): string {
+  return `/api/admin/products/${productSlug(code) || 'item'}?code=${encodeURIComponent(code)}`;
+}
+
+export function adminProductEdit(code: string): string {
+  return `/admin/products/${productSlug(code) || 'item'}/edit?code=${encodeURIComponent(code)}`;
+}
+
+/** URL'dan kelgan kodni xavfsiz ochadi (ikki marta decode qilinsa ham xato bermaydi) */
+export function safeDecode(s: string): string {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}

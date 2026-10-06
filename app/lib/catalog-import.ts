@@ -21,6 +21,20 @@ export function normCode(code: string): string {
 // Saytdagi eski kod → katalog kodi (yozilishi farq qiladiganlar)
 const ALIASES: Record<string, string> = { 'УБ-1А': 'УБ-1' };
 
+/** Katalog boshqaradigan xarakteristika qatorlari — yangilashda shular almashtiriladi, admin qo'shgan boshqa qatorlar saqlanadi */
+const PTO_SPEC_IDS = new Set(['olcham', 'ogirlik', 'beton', 'klass', 'f', 'w', 'hajm', 'armatura', 'metall', 'zaklad', 'seriya', 'uzunlik']);
+
+/** Tavsifdagi eski «taxminiy og'irligi» iborasini katalogdagi aniq og'irlik bilan almashtiradi */
+function patchWeight(d: LocalizedText, weight?: string): LocalizedText {
+  const t = weight?.replace(/\s*t$/, '');
+  if (!t) return d;
+  return {
+    uz: d.uz.replace(/(taxminiy )?og‘irligi [\d,]+ t/g, `og‘irligi ${t} t`),
+    ru: d.ru.replace(/(ориентировочная )?масса [\d,]+ т/g, `масса ${t} т`),
+    en: d.en.replace(/(approx\. )?weight [\d,]+ t/g, `weight ${t} t`),
+  };
+}
+
 /** Boshlang'ich (qisqa) tavsif — admin hali o'zi yozmagan deb hisoblanadi */
 const isShort = (p: Product) => Math.max(...(['uz', 'ru', 'en'] as const).map((l) => (p.description?.[l] || '').length)) < 400;
 
@@ -66,9 +80,20 @@ export function mergeCatalog(products: Product[], opts: ImportOptions, catalog: 
       } else {
         changes.push({ code: p.code, catalogCode: c.code, action: 'same', fields, price: p.price || 0 });
       }
-      if (opts.specs && (!p.specs || p.specs.length === 0) && c.specs.length) {
-        p.specs = c.specs.map((s) => ({ ...s, label: { ...s.label } }));
-        fields.push('xarakteristika');
+      if (opts.specs && c.specs.length) {
+        // katalog qatorlari yangilanadi, admin o'zi qo'shgan boshqa qatorlar oxirida saqlanadi
+        const own = (p.specs || []).filter((s) => !PTO_SPEC_IDS.has(s.id) && !c.specs.some((x) => x.id === s.id));
+        const next = [...c.specs.map((s) => ({ ...s, label: { ...s.label } })), ...own];
+        if (JSON.stringify(next) !== JSON.stringify(p.specs || [])) {
+          p.specs = next;
+          fields.push('xarakteristika');
+        }
+        const w = c.specs.find((s) => s.id === 'ogirlik')?.value;
+        const desc = patchWeight(p.description, w);
+        if (JSON.stringify(desc) !== JSON.stringify(p.description)) {
+          p.description = desc;
+          if (!fields.includes('xarakteristika')) fields.push("og'irlik");
+        }
       }
       if (opts.texts && isShort(p)) {
         // katalog kodi saytdagi kod bilan almashtiriladi (masalan «Ф5-Усу(250)» → «Ф5-УСУ»)

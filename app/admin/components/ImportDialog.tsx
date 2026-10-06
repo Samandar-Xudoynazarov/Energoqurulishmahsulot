@@ -16,7 +16,7 @@ interface Change {
 const OPTS = [
   { key: 'addNew', title: "Yangi mahsulotlarni qo'shish", desc: "Saytda yo'q mahsulotlar katalogdan qo'shiladi (rasmsiz — keyin yuklaysiz)" },
   { key: 'prices', title: 'Narxlarni yangilash', desc: 'QQSsiz narx PTO kalkulyatsiyasidan olinadi' },
-  { key: 'specs', title: "Xarakteristikalarni to'ldirish", desc: "Faqat xarakteristikasi bo'sh mahsulotlarga" },
+  { key: 'specs', title: 'Xarakteristikalarni yangilash', desc: "O'lcham, og'irlik, beton klassi, seriya va h.k. katalogdagi qiymatlar bilan yangilanadi. O'zingiz qo'shgan boshqa qatorlar saqlanadi" },
   { key: 'texts', title: 'Tavsiflarni kengaytirish', desc: "Faqat qisqa (boshlang'ich) tavsifli mahsulotlarga — siz yozgan uzun matnlarga tegmaydi" },
 ] as const;
 
@@ -72,7 +72,7 @@ export default function ImportDialog({ onClose, onDone }: { onClose: () => void;
         <div className="a-modal-body">
           <div className="a-msg info">
             <i className="fas fa-info-circle"></i>
-            <span>Katalog — PTO kalkulyatsiyasi (2026-sentabr, 50 ta mahsulot). Rasmlar, PDF hujjatlar va kategoriyalar <b>o&apos;zgartirilmaydi</b>. Narxlarni keyin har bir mahsulotda qo&apos;lda ham o&apos;zgartirish mumkin.</span>
+            <span>Katalog — PTO kalkulyatsiyasi va zavod ma&apos;lumotlari jadvali (2026-oktabr, 55 ta mahsulot). Rasmlar, PDF hujjatlar va kategoriyalar <b>o&apos;zgartirilmaydi</b>. Narxlarni keyin har bir mahsulotda qo&apos;lda ham o&apos;zgartirish mumkin.</span>
           </div>
           <div className="a-grid-2" style={{ marginBottom: 16 }}>
             {OPTS.map((o) => (
