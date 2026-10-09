@@ -33,6 +33,8 @@ export async function PUT(req: NextRequest, { params }: { params: { code: string
       tag: body.tag ?? existing.tag,
       description: body.description ?? existing.description,
       image: body.image ?? existing.image,
+      photo: body.photo ?? existing.photo,
+      drawing: body.drawing ?? existing.drawing,
       certificatePdf: body.certificatePdf ?? existing.certificatePdf,
       passportPdf: body.passportPdf ?? existing.passportPdf,
       specs: Array.isArray(body.specs) ? body.specs : existing.specs,
@@ -40,8 +42,8 @@ export async function PUT(req: NextRequest, { params }: { params: { code: string
     };
 
     // Eski fayllar yangisiga almashtirilgan bo'lsa, Blob'dan tozalash
-    if (existing.image && existing.image !== updatedProduct.image) {
-      await deleteBlobFile(existing.image);
+    for (const k of ['image', 'photo', 'drawing'] as const) {
+      if (existing[k] && existing[k] !== updatedProduct[k]) await deleteBlobFile(existing[k]!);
     }
     if (existing.certificatePdf && existing.certificatePdf !== updatedProduct.certificatePdf) {
       await deleteBlobFile(existing.certificatePdf);
@@ -67,7 +69,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { code: str
     }
 
     // Best-effort cleanup of associated files
-    if (existing.image) await deleteBlobFile(existing.image);
+    for (const k of ['image', 'photo', 'drawing'] as const) if (existing[k]) await deleteBlobFile(existing[k]!);
     if (existing.certificatePdf) await deleteBlobFile(existing.certificatePdf);
     if (existing.passportPdf) await deleteBlobFile(existing.passportPdf);
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Product, Category } from '../types';
 import { fmtSum } from './lib/format';
-import { adminProductApi, adminProductEdit } from '../lib/product-utils';
+import { adminProductApi, adminProductEdit, mainImage, productImages } from '../lib/product-utils';
 import ImportDialog from './components/ImportDialog';
 
 export default function AdminDashboard() {
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
     (p) => (!cat || p.category === cat) && (!q || `${p.code} ${p.name.uz} ${p.name.ru}`.toLowerCase().includes(q.toLowerCase()))
   );
   const withPrice = real.filter((p) => p.price && p.price > 0).length;
-  const noImage = real.filter((p) => !p.image).length;
+  const noImage = real.filter((p) => !mainImage(p)).length;
 
   const categoryLabel = (id: string) => categories.find((c) => c.id === id)?.name.uz || id;
 
@@ -116,7 +116,14 @@ export default function AdminDashboard() {
               <tbody>
                 {shown.map((p) => (
                   <tr key={p.code}>
-                    <td>{p.image ? <img src={p.image} alt="" className="a-thumb" /> : <div className="a-thumb-empty"><i className="fas fa-image"></i></div>}</td>
+                    <td>
+                      {mainImage(p) ? <img src={mainImage(p)} alt="" className="a-thumb" /> : <div className="a-thumb-empty"><i className="fas fa-image"></i></div>}
+                      <div className="a-img-dots" title="Real surat · 3D · Chizma">
+                        {(['photo', '3d', 'drawing'] as const).map((k) => (
+                          <span key={k} className={productImages(p).some((x) => x.kind === k) ? 'on' : ''} />
+                        ))}
+                      </div>
+                    </td>
                     <td>
                       <span className="a-code">{p.code}</span>
                       <span className="a-sub">{p.name?.uz}</span>

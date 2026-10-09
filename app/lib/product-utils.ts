@@ -39,6 +39,23 @@ export function realImage(url?: string): string {
   return url;
 }
 
+export type ProductImageKind = 'photo' | '3d' | 'drawing';
+
+/** Mahsulotning barcha rasmlari tartib bilan: real surat → 3D → chizma (bo'shlari tashlab ketiladi) */
+export function productImages(p: Product): { kind: ProductImageKind; src: string }[] {
+  const list: { kind: ProductImageKind; src: string }[] = [
+    { kind: 'photo', src: realImage(p.photo) },
+    { kind: '3d', src: realImage(p.image) },
+    { kind: 'drawing', src: realImage(p.drawing) },
+  ];
+  return list.filter((x) => x.src);
+}
+
+/** Kartochka va ulashish uchun asosiy rasm */
+export function mainImage(p: Product): string {
+  return productImages(p)[0]?.src || '';
+}
+
 export function isValidLocale(l: string): l is Language {
   return l === 'uz' || l === 'ru' || l === 'en';
 }

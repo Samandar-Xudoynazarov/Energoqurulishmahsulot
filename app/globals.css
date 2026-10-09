@@ -1003,7 +1003,7 @@ a.product-item { display: block; color: inherit; }
 .breadcrumbs a:hover { color: var(--accent); }
 .breadcrumbs i { font-size: 0.65rem; opacity: 0.6; }
 .pp-hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: start; }
-.pp-image { position: sticky; top: 90px; }
+.pp-gallery { position: sticky; top: 90px; }
 .pp-image {
   border-radius: 20px; overflow: hidden; background: var(--light-bg);
   aspect-ratio: 4 / 3; box-shadow: var(--shadow);
@@ -1064,7 +1064,7 @@ a.product-item { display: block; color: inherit; }
 
 @media (max-width: 992px) {
   .pp-hero, .pp-inquiry { grid-template-columns: 1fr; }
-  .pp-image { position: static; }
+  .pp-gallery { position: static; }
 }
 @media (max-width: 768px) {
   .product-page { padding-top: 90px; }
@@ -1194,3 +1194,20 @@ a.product-item { display: block; color: inherit; }
   .price-lg .price-value { font-size: 1.6rem; }
   .form-qty label { flex: 1 1 100%; }
 }
+
+/* Mahsulot galereyasi: real surat / 3D / chizma */
+.pp-image-contain { background: #fff; }
+.pp-image-contain .protected-img img { object-fit: contain; }
+.pp-thumbs { display: flex; gap: 10px; margin-top: 12px; }
+.pp-thumb {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 6px;
+  background: #fff; border: 2px solid transparent; border-radius: 12px; cursor: pointer;
+  box-shadow: var(--shadow); font: inherit; color: var(--primary); transition: border-color .2s;
+}
+.pp-thumb:hover { border-color: var(--light-bg); }
+.pp-thumb.active { border-color: var(--accent); }
+.pp-thumb-img { display: block; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; background: #fff; }
+.pp-thumb-img img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+.pp-thumb-label { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-thumb-label i { color: var(--accent); margin-right: 3px; }
+@media (max-width: 480px) { .pp-thumb-label { font-size: 0.72rem; } }

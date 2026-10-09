@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
       tag: body.tag || { uz: '', ru: '', en: '' },
       description: body.description || { uz: '', ru: '', en: '' },
       image: body.image || '',
+      photo: body.photo || undefined,
+      drawing: body.drawing || undefined,
       certificatePdf: body.certificatePdf || undefined,
       passportPdf: body.passportPdf || undefined,
       specs: Array.isArray(body.specs) ? body.specs : [],

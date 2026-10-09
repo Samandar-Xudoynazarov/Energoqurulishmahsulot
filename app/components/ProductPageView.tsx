@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import { Category, Language, Product, Project, SiteSettings } from '../types';
 import { useLanguage } from '../hooks/useLanguage';
-import { productSlug, productUrl, realImage, hasPrice, formatPrice, priceFrom } from '../lib/product-utils';
+import { productSlug, productUrl, hasPrice, formatPrice, priceFrom } from '../lib/product-utils';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import InquiryForm from './InquiryForm';
 import FloatingContact from './FloatingContact';
 import { ProjectCard, ProjectModal } from './Projects';
 import { telHref } from './Contact';
-import ProtectedImage from './ProtectedImage';
+import ProductGallery from './ProductGallery';
 import PriceTag from './PriceTag';
 
 interface Props {
@@ -32,7 +32,6 @@ export default function ProductPageView({ locale, product, category, related, pr
   const name = product.name[lang] || product.name.uz;
   const tag = product.tag[lang] || product.tag.uz;
   const desc = product.description[lang] || product.description.uz;
-  const image = realImage(product.image);
   const catName = category ? category.name[lang] || category.name.uz : '';
 
   return (
@@ -56,11 +55,7 @@ export default function ProductPageView({ locale, product, category, related, pr
           </div>
 
           <div className="pp-hero">
-            <div className="pp-image">
-              {image ? <ProtectedImage src={image} alt={`${product.code} — ${name}`} /> : (
-                <div className="pp-image-empty"><i className="fas fa-cubes"></i><span>{product.code}</span></div>
-              )}
-            </div>
+            <ProductGallery product={product} alt={`${product.code} — ${name}`} t={t} />
             <div className="pp-info">
               {tag && <div className="modal-tag">{tag}</div>}
               <h1><span className="pp-code">{product.code}</span> {name !== product.code && <span className="pp-name">{name}</span>}</h1>

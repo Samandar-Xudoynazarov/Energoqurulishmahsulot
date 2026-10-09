@@ -34,7 +34,12 @@ export interface Product {
   name: LocalizedText;
   tag: LocalizedText;
   description: LocalizedText;
+  /** 3D ko'rinish (render) — saytdagi mavjud rasmlar shu maydonda */
   image: string;
+  /** Real surat (zavodda olingan foto) */
+  photo?: string;
+  /** Chizma / chertyoj (o'lchamlar bilan) */
+  drawing?: string;
   certificatePdf?: string;
   passportPdf?: string;
   specs: ProductSpec[];

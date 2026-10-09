@@ -263,3 +263,8 @@
   .a-table .hide-sm { display: none; }
   .a-upload.wide .a-upload-prev { width: 120px; height: 80px; }
 }
+
+/* Mahsulotlar ro'yxati: 3 ta rasm holati (real · 3D · chizma) */
+.a-img-dots { display: flex; gap: 3px; justify-content: center; margin-top: 4px; }
+.a-img-dots span { width: 7px; height: 7px; border-radius: 50%; background: #d5dae1; }
+.a-img-dots span.on { background: #16a34a; }

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Language, Product } from '../types';
-import { productUrl, realImage, isRealProduct, hasPrice, formatPrice } from '../lib/product-utils';
+import { productUrl, mainImage, isRealProduct, hasPrice, formatPrice } from '../lib/product-utils';
 import ProtectedImage from './ProtectedImage';
 
 interface ModalProps {
@@ -57,7 +57,7 @@ export default function Modal({ modalKey, currentLang, onClose, products }: Moda
   const title = product.name[currentLang] || product.name.uz;
   const tag = product.tag[currentLang] || product.tag.uz;
   const desc = product.description[currentLang] || product.description.uz;
-  const image = realImage(product.image);
+  const image = mainImage(product);
   const pageUrl = isRealProduct(product) ? productUrl(currentLang, product.code) : '';
 
   return (

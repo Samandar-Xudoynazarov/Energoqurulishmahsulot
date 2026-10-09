@@ -228,9 +228,22 @@ export default function ProductForm({ initial, isEdit }: { initial?: Product; is
       </div>
 
       <div className="a-card">
-        <div className="a-card-head"><h2><i className="fas fa-paperclip"></i> Rasm va hujjatlar</h2></div>
+        <div className="a-card-head">
+          <div>
+            <h2><i className="fas fa-images"></i> Rasmlar</h2>
+            <p>Saytda uchta tugma bilan almashtirib ko&apos;riladi. Birinchi bo&apos;lib real surat, u bo&apos;lmasa 3D ko&apos;rinish chiqadi.</p>
+          </div>
+        </div>
         <div className="a-grid-3">
-          <FileUploader label="Mahsulot rasmi" kind="image" value={product.image} onUploaded={(url) => setProduct((p) => ({ ...p, image: url }))} onRemove={() => setProduct((p) => ({ ...p, image: '' }))} />
+          <FileUploader label="1. Real surat" hint="Zavodda olingan foto" kind="image" value={product.photo} onUploaded={(url) => setProduct((p) => ({ ...p, photo: url }))} onRemove={() => setProduct((p) => ({ ...p, photo: '' }))} />
+          <FileUploader label="2. 3D ko'rinish" hint="Oq fonli 3D render" kind="image" value={product.image} onUploaded={(url) => setProduct((p) => ({ ...p, image: url }))} onRemove={() => setProduct((p) => ({ ...p, image: '' }))} />
+          <FileUploader label="3. Chizma (chertyoj)" hint="O'lchamlar ko'rsatilgan chizma — JPG/PNG" kind="image" value={product.drawing} onUploaded={(url) => setProduct((p) => ({ ...p, drawing: url }))} onRemove={() => setProduct((p) => ({ ...p, drawing: '' }))} />
+        </div>
+      </div>
+
+      <div className="a-card">
+        <div className="a-card-head"><h2><i className="fas fa-paperclip"></i> Hujjatlar</h2></div>
+        <div className="a-grid-2">
           <FileUploader label="Sertifikat (PDF)" kind="pdf" value={product.certificatePdf} onUploaded={(url) => setProduct((p) => ({ ...p, certificatePdf: url }))} onRemove={() => setProduct((p) => ({ ...p, certificatePdf: '' }))} />
           <FileUploader label="Pasport (PDF)" kind="pdf" value={product.passportPdf} onUploaded={(url) => setProduct((p) => ({ ...p, passportPdf: url }))} onRemove={() => setProduct((p) => ({ ...p, passportPdf: '' }))} />
         </div>

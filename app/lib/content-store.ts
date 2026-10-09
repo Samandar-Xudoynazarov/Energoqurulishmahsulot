@@ -72,7 +72,7 @@ export async function saveContent(data: unknown): Promise<SiteContent> {
   // olib tashlangan rasmlarni Supabase'dan o'chirish (eski mahsulot rasmlariga tegmaydi)
   const now = files(clean);
   const products = await getProducts().catch(() => []);
-  const productFiles = new Set(products.map((p) => p.image).filter(Boolean));
+  const productFiles = new Set(products.flatMap((p) => [p.image, p.photo, p.drawing]).filter(Boolean));
   for (const url of Array.from(files(before))) if (!now.has(url) && !productFiles.has(url)) await deleteByUrl(url).catch(() => {});
   return clean;
 }

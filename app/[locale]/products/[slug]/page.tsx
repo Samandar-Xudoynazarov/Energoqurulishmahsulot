@@ -6,7 +6,7 @@ import { getProducts } from '../../../lib/products-store';
 import { getCategories } from '../../../lib/categories-store';
 import { getProjects } from '../../../lib/projects-store';
 import { getSettings } from '../../../lib/settings-store';
-import { findProductBySlug, isRealProduct, isValidLocale, productSlug, realImage } from '../../../lib/product-utils';
+import { findProductBySlug, isRealProduct, isValidLocale, productSlug, mainImage, productImages } from '../../../lib/product-utils';
 import ProductPageView from '../../../components/ProductPageView';
 
 export const dynamic = 'force-dynamic';
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: { locale: string; s
   const name = product.name[locale] || product.name.uz;
   const title = `${product.code} — ${name} | ${BRAND}`;
   const description = describe(product, locale);
-  const image = realImage(product.image);
+  const image = mainImage(product);
 
   return {
     title,
@@ -88,7 +88,7 @@ export default async function ProductPage({ params }: { params: { locale: string
 
   const name = product.name[locale] || product.name.uz;
   const url = `${SITE_URL}/${locale}/products/${slug}`;
-  const image = realImage(product.image);
+  const images = productImages(product).map((x) => x.src);
 
   const jsonLd = [
     {
@@ -99,7 +99,7 @@ export default async function ProductPage({ params }: { params: { locale: string
       mpn: product.code,
       description: describe(product, locale),
       category: category ? category.name[locale] : undefined,
-      image: image || undefined,
+      image: images.length ? images : undefined,
       url,
       brand: { '@type': 'Brand', name: BRAND },
       manufacturer: { '@type': 'Organization', name: 'ENERGOQURILISHMAHSULOT MCHJ', url: SITE_URL },
