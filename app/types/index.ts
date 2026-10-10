@@ -50,6 +50,7 @@ export interface Product {
 
 /** PTO katalogidagi mahsulot (import uchun) */
 export interface CatalogItem {
+  image?: string;
   code: string;
   category: string;
   name: LocalizedText;

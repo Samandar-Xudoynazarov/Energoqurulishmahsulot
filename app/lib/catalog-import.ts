@@ -35,14 +35,12 @@ function patchWeight(d: LocalizedText, weight?: string): LocalizedText {
   };
 }
 
-/** Boshlang'ich (qisqa) tavsif — admin hali o'zi yozmagan deb hisoblanadi */
-const isShort = (p: Product) => Math.max(...(['uz', 'ru', 'en'] as const).map((l) => (p.description?.[l] || '').length)) < 400;
-
 export interface ImportOptions {
   prices: boolean;
   specs: boolean;
   texts: boolean;
   addNew: boolean;
+  images?: boolean;
 }
 
 export interface ImportChange {
@@ -54,7 +52,7 @@ export interface ImportChange {
   oldPrice?: number;
 }
 
-/** Katalogni mavjud mahsulotlarga qo'shadi. Rasm, PDF va kategoriya hech qachon o'zgartirilmaydi. */
+/** Update selected catalog fields; photos, documents and existing categories are retained. */
 export function mergeCatalog(products: Product[], opts: ImportOptions, catalog: CatalogItem[] = CATALOG) {
   const out = products.map((p) => ({ ...p }));
   const changes: ImportChange[] = [];
@@ -82,7 +80,7 @@ export function mergeCatalog(products: Product[], opts: ImportOptions, catalog: 
       }
       if (opts.specs && c.specs.length) {
         // katalog qatorlari yangilanadi, admin o'zi qo'shgan boshqa qatorlar oxirida saqlanadi
-        const own = (p.specs || []).filter((s) => !PTO_SPEC_IDS.has(s.id) && !c.specs.some((x) => x.id === s.id));
+        const own = (p.specs || []).filter((s) => !PTO_SPEC_IDS.has(s.id) && !c.specs.some((x) => x.id === s.id) && !/armatur|арматур|reinforcement|diameter|диаметр/i.test(Object.values(s.label).join(' ')));
         const next = [...c.specs.map((s) => ({ ...s, label: { ...s.label } })), ...own];
         if (JSON.stringify(next) !== JSON.stringify(p.specs || [])) {
           p.specs = next;
@@ -95,13 +93,20 @@ export function mergeCatalog(products: Product[], opts: ImportOptions, catalog: 
           if (!fields.includes('xarakteristika')) fields.push("og'irlik");
         }
       }
-      if (opts.texts && isShort(p)) {
+      if (opts.texts) {
         // katalog kodi saytdagi kod bilan almashtiriladi (masalan «Ф5-Усу(250)» → «Ф5-УСУ»)
         const swap = (t: LocalizedText): LocalizedText => ({ uz: t.uz.split(c.code).join(p.code), ru: t.ru.split(c.code).join(p.code), en: t.en.split(c.code).join(p.code) });
-        p.description = swap(c.description);
-        p.name = swap(c.name);
-        p.tag = { ...c.tag };
-        fields.push('tavsif');
+        const description = swap(c.description), name = swap(c.name), tag = { ...c.tag };
+        if (JSON.stringify([p.description, p.name, p.tag]) !== JSON.stringify([description, name, tag])) {
+          p.description = description;
+          p.name = name;
+          p.tag = tag;
+          fields.push('tavsif');
+        }
+      }
+      if (opts.images && c.image && p.image !== c.image) {
+        p.image = c.image;
+        fields.push('3D rasm');
       }
       if (fields.length) changes[changes.length - 1].action = 'update';
     } else if (opts.addNew) {
@@ -111,7 +116,7 @@ export function mergeCatalog(products: Product[], opts: ImportOptions, catalog: 
         name: { ...c.name },
         tag: { ...c.tag },
         description: { ...c.description },
-        image: '',
+        image: opts.images ? (c.image || '') : '',
         specs: c.specs.map((s) => ({ ...s, label: { ...s.label } })),
         order: out.length,
         price: c.price > 0 ? c.price : undefined,

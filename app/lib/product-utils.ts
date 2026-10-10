@@ -41,11 +41,11 @@ export function realImage(url?: string): string {
 
 export type ProductImageKind = 'photo' | '3d' | 'drawing';
 
-/** Mahsulotning barcha rasmlari tartib bilan: real surat → 3D → chizma (bo'shlari tashlab ketiladi) */
+/** Mahsulotning barcha rasmlari tartib bilan: 3D → real surat → chizma (bo'shlari tashlab ketiladi) */
 export function productImages(p: Product): { kind: ProductImageKind; src: string }[] {
   const list: { kind: ProductImageKind; src: string }[] = [
-    { kind: 'photo', src: realImage(p.photo) },
     { kind: '3d', src: realImage(p.image) },
+    { kind: 'photo', src: realImage(p.photo) },
     { kind: 'drawing', src: realImage(p.drawing) },
   ];
   return list.filter((x) => x.src);

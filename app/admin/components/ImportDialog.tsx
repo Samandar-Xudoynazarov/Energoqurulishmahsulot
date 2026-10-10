@@ -14,17 +14,18 @@ interface Change {
 }
 
 const OPTS = [
-  { key: 'addNew', title: "Yangi mahsulotlarni qo'shish", desc: "Saytda yo'q mahsulotlar katalogdan qo'shiladi (rasmsiz — keyin yuklaysiz)" },
+  { key: 'addNew', title: "Yangi mahsulotlarni qo'shish", desc: "Saytda yo'q mahsulotlar katalogdan qo'shiladi" },
   { key: 'prices', title: 'Narxlarni yangilash', desc: 'QQSsiz narx PTO kalkulyatsiyasidan olinadi' },
-  { key: 'specs', title: 'Xarakteristikalarni yangilash', desc: "O'lcham, og'irlik, beton klassi, seriya va h.k. katalogdagi qiymatlar bilan yangilanadi. O'zingiz qo'shgan boshqa qatorlar saqlanadi" },
-  { key: 'texts', title: 'Tavsiflarni kengaytirish', desc: "Faqat qisqa (boshlang'ich) tavsifli mahsulotlarga — siz yozgan uzun matnlarga tegmaydi" },
+  { key: 'specs', title: 'Xarakteristikalarni yangilash', desc: "O'lcham, og'irlik, beton markasi, seriya va h.k. katalogdagi qiymatlar bilan yangilanadi. O'zingiz qo'shgan boshqa qatorlar saqlanadi" },
+  { key: 'texts', title: 'Tavsiflarni yangilash', desc: "Uch tildagi mavjud tavsiflar zavod katalogi bilan almashtiriladi. Armatura tafsilotlari olib tashlanadi" },
+  { key: 'images', title: 'Yangi 3D rasmlarni qo‘yish', desc: 'Tayyor rasmlar yuklanadi. Saqlangach, boshqa joyda ishlatilmaydigan eski 3D rasmlar o‘chiriladi' },
 ] as const;
 
 type Opts = Record<(typeof OPTS)[number]['key'], boolean>;
 
 /** PTO katalogidan mahsulotlarni qo'shish/yangilash — avval nima o'zgarishini ko'rsatadi */
 export default function ImportDialog({ onClose, onDone }: { onClose: () => void; onDone: (p: Product[]) => void }) {
-  const [opts, setOpts] = useState<Opts>({ addNew: true, prices: true, specs: true, texts: true });
+  const [opts, setOpts] = useState<Opts>({ addNew: true, prices: true, specs: true, texts: true, images: true });
   const [changes, setChanges] = useState<Change[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -32,10 +33,12 @@ export default function ImportDialog({ onClose, onDone }: { onClose: () => void;
   useEffect(() => {
     setChanges(null);
     const qs = Object.entries(opts).map(([k, v]) => `${k}=${v ? 1 : 0}`).join('&');
-    fetch(`/api/admin/products/import?${qs}`)
-      .then((r) => r.json())
+    const controller = new AbortController();
+    fetch(`/api/admin/products/import?${qs}`, { signal: controller.signal })
+      .then(async (r) => { const d = await r.json(); if (!r.ok) throw new Error(d.error); return d; })
       .then((d) => setChanges(d.changes || []))
-      .catch(() => setMsg({ ok: false, text: "Ko'rib chiqishni yuklab bo'lmadi" }));
+      .catch(() => { if (!controller.signal.aborted) setMsg({ ok: false, text: "Ko'rib chiqishni yuklab bo'lmadi" }); });
+    return () => controller.abort();
   }, [opts]);
 
   const added = changes?.filter((c) => c.action === 'add') || [];
@@ -53,7 +56,7 @@ export default function ImportDialog({ onClose, onDone }: { onClose: () => void;
       const d = await res.json();
       if (!res.ok) throw new Error(d.error || 'Xatolik');
       onDone(d.products);
-      setMsg({ ok: true, text: `Tayyor: ${added.length} ta qo'shildi, ${updated.length} ta yangilandi` });
+      setMsg({ ok: true, text: `Tayyor: ${d.changes.filter((c: Change) => c.action === 'add').length} ta qo'shildi, ${d.changes.filter((c: Change) => c.action === 'update').length} ta yangilandi. ${(d.warnings || []).join(' ')}` });
       setChanges([]);
     } catch (e) {
       setMsg({ ok: false, text: e instanceof Error ? e.message : 'Xatolik' });
@@ -63,21 +66,21 @@ export default function ImportDialog({ onClose, onDone }: { onClose: () => void;
   }
 
   return (
-    <div className="a-modal-bg" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="a-modal-bg" onClick={(e) => { if (!busy && e.target === e.currentTarget) onClose(); }}>
       <div className="a-modal" role="dialog" aria-modal="true">
         <div className="a-modal-head">
           <h2><i className="fas fa-file-import"></i> PTO katalogidan yangilash</h2>
-          <button type="button" className="a-btn a-btn-ghost a-icon-btn" onClick={onClose} aria-label="Yopish"><i className="fas fa-times"></i></button>
+          <button type="button" className="a-btn a-btn-ghost a-icon-btn" disabled={busy} onClick={onClose} aria-label="Yopish"><i className="fas fa-times"></i></button>
         </div>
         <div className="a-modal-body">
           <div className="a-msg info">
             <i className="fas fa-info-circle"></i>
-            <span>Katalog — PTO kalkulyatsiyasi va zavod ma&apos;lumotlari jadvali (2026-oktabr, 55 ta mahsulot). Rasmlar, PDF hujjatlar va kategoriyalar <b>o&apos;zgartirilmaydi</b>. Narxlarni keyin har bir mahsulotda qo&apos;lda ham o&apos;zgartirish mumkin.</span>
+            <span>Zavod katalogi: M200 — F150, M300 — F200, M400 — F300. Metall og‘irligi ko‘rsatiladi. Tanlangan ma’lumotlar va tayyor 3D rasmlar birgalikda yangilanadi.</span>
           </div>
           <div className="a-grid-2" style={{ marginBottom: 16 }}>
             {OPTS.map((o) => (
               <label key={o.key} className="a-check">
-                <input type="checkbox" checked={opts[o.key]} onChange={(e) => setOpts((s) => ({ ...s, [o.key]: e.target.checked }))} />
+                <input type="checkbox" disabled={busy} checked={opts[o.key]} onChange={(e) => setOpts((s) => ({ ...s, [o.key]: e.target.checked }))} />
                 <div><b>{o.title}</b><span>{o.desc}</span></div>
               </label>
             ))}
@@ -119,7 +122,7 @@ export default function ImportDialog({ onClose, onDone }: { onClose: () => void;
           <span className="a-hint" style={{ marginRight: 'auto' }}>
             {changes ? `${added.length} ta yangi · ${updated.length} ta yangilanadi` : ''}
           </span>
-          <button type="button" className="a-btn" onClick={onClose}>Yopish</button>
+          <button type="button" className="a-btn" disabled={busy} onClick={onClose}>Yopish</button>
           <button type="button" className="a-btn a-btn-primary" disabled={busy || !changes || (added.length === 0 && updated.length === 0)} onClick={apply}>
             {busy ? <><i className="fas fa-spinner fa-spin"></i> Saqlanmoqda...</> : <><i className="fas fa-check"></i> Qo&apos;llash</>}
           </button>

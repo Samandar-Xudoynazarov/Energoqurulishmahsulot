@@ -47,11 +47,23 @@ tashriflar soni Supabase limitlariga deyarli ta'sir qilmaydi. `vercel.json` dagi
 
 ## 2026-09 yangilanish: narxlar, katalog, bo'limlar
 
-- **PTO katalogi** (`app/data/catalog.ts`, 50 ta mahsulot): QQSsiz narx, xarakteristikalar va kengaytirilgan tavsif (uz/ru/en).
+- **PTO katalogi** (`app/data/catalog.ts`, 57 ta mahsulot): QQSsiz narx, xarakteristikalar va kengaytirilgan tavsif (uz/ru/en).
   Admin → Mahsulotlar → **«PTO katalogidan yangilash»**: avval nima o'zgarishini ko'rsatadi, keyin qo'llaydi.
-  Rasmlar, PDF va kategoriyalarga tegmaydi; admin yozgan uzun tavsiflar (400+ belgi) saqlanib qoladi.
+  Tanlangan tavsiflar, xarakteristikalar va 3D rasmlar yangilanadi. PDF, fotosurat va kategoriyalar saqlanadi.
 - **Mahsulot sahifasi**: xarakteristikalar ostida QQSsiz narx va «Sotib olish» tugmasi; buyurtma formasida miqdor
   va taxminiy summa. Telegram xabarida narx serverdagi ma'lumotdan hisoblanadi.
 - **Sayt bo'limlari** (`/admin/content`, `data/content.json`): ishlab chiqarish bosqichlari (rasm bilan),
   jamoa va texnika (mahsulotlardan alohida; rasm + galereya + batafsil matn), «Nima uchun biz» (fon rasmli katta kartalar).
 - **Sozlamalar**: zavod rasmi («Biz haqimizda») va bosh ekran fon rasmi.
+
+## 2026-10 PTO va 3D yangilanishi
+
+Yangi kodni hostingga joylagach, Admin → Mahsulotlar → **PTO katalogidan yangilash** → **Qo‘llash**.
+3D rasmlar avval Supabase’ga yuklanadi, mahsulotlar saqlangach boshqa joyda ishlatilmaydigan eski renderlar o‘chiriladi. Yuklash xatosida mavjud mahsulotlar almashtirilmaydi.
+
+- 57 mahsulot; 49 mahsulotga 48 ta yangi render. Qolgan mahsulotlar mavjud rasmini saqlaydi.
+- M200/F150, M300/F200, M400/F300 — zavod tasdiqlagan moslik. НСП35.10А va Л12-8/2: M400/F300.
+- Armatura tafsilotlari o‘rniga metall og‘irligi; tasdiqlanmagan beton klassi va suv o‘tkazmaslik qiymatlari olib tashlangan.
+- 3D birinchi ko‘rinadi. Katalogda qidiruv va kategoriya filtrlari mavjud.
+- Yangi ikkita mahsulot narxi tasdiqlanmagani sabab narx ko‘rsatilmaydi.
+- Supabase sozlamalari mavjud hostingda saqlanishi kerak; maxfiy chizmalar bu yangilanishga kiritilmagan.

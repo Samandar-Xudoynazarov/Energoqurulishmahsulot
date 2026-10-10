@@ -54,7 +54,7 @@ export async function readJson<T>(path: string): Promise<T | null> {
   const { data, error } = await supabase().storage.from(BUCKET).download(path, {}, { cache: 'no-store' } as any);
   if (error || !data) {
     const status = (error as any)?.status ?? (error as any)?.statusCode;
-    if (String(status) === '404' || String(status) === '400' || /not.?found/i.test(error?.message || '')) return null;
+    if (String(status) === '404' || /not.?found/i.test(error?.message || '')) return null;
     throw error || new Error(`readJson(${path}) failed`);
   }
   return JSON.parse(await data.text()) as T;

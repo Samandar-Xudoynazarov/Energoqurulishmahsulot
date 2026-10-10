@@ -25,7 +25,7 @@ function seedProducts(): Product[] {
     order: index,
   }));
   // Yangi o'rnatishda PTO katalogi ham qo'shiladi (narx, xarakteristika, tavsif)
-  return mergeCatalog(base, { prices: true, specs: true, texts: true, addNew: true }).products;
+  return mergeCatalog(base, { prices: true, specs: true, texts: true, addNew: true, images: true }).products;
 }
 
 const store = createJsonStore<Product[]>('products', seedProducts);
